@@ -7,6 +7,6 @@ namespace eshop.Domain.Entities
     {
         public required int Id { get; set; }
         public required string Name { get; set; }
-        //public virtual ICollection<Product>? Products { get; set; }
+        public virtual ICollection<Product>? Products { get; set; }
     }
 }

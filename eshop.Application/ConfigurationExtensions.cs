@@ -1,4 +1,5 @@
 ﻿using eshop.Application.eshop.Application.Products;
+using eshop.Domain.Entities;
 using eshop.Infrastructure;
 using eshop.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,12 @@ namespace eshop.Application
     {
         public static IServiceCollection RegisterApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            Console.WriteLine("RegisterApplicationServices");
-            services.AddDbContext<AppDbContext>(options => options.UseNpgsql());
-            services.AddScoped<RepositoryFactory, DatabaseRepositoryFactory>();
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(connectionString));
+
+            //services.AddScoped<RepositoryFactory, DatabaseRepositoryFactory>();
+            services.AddScoped<IRepository<Product>, ProductRepository>();
             services.AddScoped<GetProductService>();
             services.AddScoped<AddProductService>();
                      

@@ -9,7 +9,7 @@ namespace eshop.Infrastructure
     {
 
         public DbSet<Product> Products { get; set; } = null!;
-       // public DbSet<Category> Categories { get; set; }
+        public DbSet<Category> Categories { get; set; } = null!;
        // public DbSet<Order> Orders { get; set; }
        // public DbSet<User> Users { get; set; }
        // public DbSet<Basket> Baskets { get; set; }
@@ -27,8 +27,13 @@ namespace eshop.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //create product realtions
+            modelBuilder.Entity<Product>().HasKey(p => p.Id).HasName("ProductPrimaryKey");
+          
+
+            //create Category relations
+            modelBuilder.Entity<Category>();
             
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
     }
 }

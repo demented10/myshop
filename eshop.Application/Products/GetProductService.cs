@@ -1,6 +1,7 @@
 ﻿using eshop.Infrastructure;
 using FluentResults;
 using eshop.Domain.Entities;
+using eshop.Infrastructure.Repositories;
 
 namespace eshop.Application
 {
@@ -10,24 +11,22 @@ namespace eshop.Application
     {
         public class GetProductService
         {
-            private readonly RepositoryFactory _repositoryFactory;
+            private readonly IRepository<Product> _productRepository;
 
-            public GetProductService(RepositoryFactory repositoryFactory)
+            public GetProductService(IRepository<Product> productRepository)
             {
-                _repositoryFactory = repositoryFactory;
+                _productRepository = productRepository;
             }
 
             public async Task<Result<IEnumerable<ProductDto>>> GetItemsAsync(CancellationToken cancellationToken)
             {
-                var repository = _repositoryFactory.CreateProductRepository();
-
                 try
                 {
-                    var items = (await repository
+                    var items = (await _productRepository
                         .GetAllAsync(cancellationToken));
 
                     return Result.Ok(items
-                        .Select(i => new ProductDto(i.Id, i.Name, i.Price)));
+                        .Select(i => new ProductDto(i.Id, i.Name, i.Price, i.Category.Id)));
                 }
                 catch (Exception ex)
                 {
@@ -38,11 +37,10 @@ namespace eshop.Application
             }
             public async Task<Result<ProductDto>> GetItemAsync(int id, CancellationToken cancellationToken)
             {
-                var repository = _repositoryFactory.CreateProductRepository();
                 try
                 {
-                    var item = await repository.GetByIdAsync(id, cancellationToken);
-                    return Result.Ok(new ProductDto(item.Id, item.Name, item.Price));
+                    var item = await _productRepository.GetByIdAsync(id, cancellationToken);
+                    return Result.Ok(new ProductDto(item.Id, item.Name, item.Price, item.Category.Id));
                 }
                 catch (Exception ex)
                 {
