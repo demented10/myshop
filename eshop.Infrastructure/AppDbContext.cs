@@ -16,7 +16,6 @@ namespace eshop.Infrastructure
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -29,8 +28,7 @@ namespace eshop.Infrastructure
         {
             //create product realtions
             modelBuilder.Entity<Product>().HasKey(p => p.Id).HasName("ProductPrimaryKey");
-          
-
+         
             //create Category relations
             modelBuilder.Entity<Category>();
             

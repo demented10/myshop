@@ -15,12 +15,13 @@ namespace eshop.Infrastructure.Repositories
             _context = context;
         }
 
-        public Task CreateAsync(Category entity)
+        public async Task CreateAsync(Category entity)
         {
-            throw new NotImplementedException();
+            await _context.Categories.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             throw new NotImplementedException();
         }

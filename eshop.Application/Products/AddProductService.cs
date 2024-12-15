@@ -18,14 +18,18 @@ namespace eshop.Application
                _productRepository = productRepository;
             }
 
-            public async Task<Result<ProductDto>> AddItemAsync(Product item, CancellationToken cancellationToken)
+            public async Task<Result<ProductDto>> AddItemAsync(ProductDto productDto, CancellationToken cancellationToken)
             {
-                var repository = _productRepository;
-
                 try
                 {
-                    await repository.CreateAsync(item);
-                    return Result.Ok(new ProductDto(  item.Id, item.Name,  item.Price, item.Category.Id));
+                    var product = new Product{
+                        Name = productDto.name,
+                        Price = productDto.price,
+                        Description = productDto.description,
+                        CategoryId = productDto.categoryId
+                    };
+                    await _productRepository.CreateAsync(product);
+                    return Result.Ok(new ProductDto(product.Id, product.Name, product.Description, product.Price, product.CategoryId));
                 }
                 catch (Exception ex)
                 {

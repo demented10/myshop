@@ -23,9 +23,9 @@ namespace eshop.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ProductDto>> Create([FromBody] Product product)
+        public async Task<ActionResult<ProductDto>> Create([FromBody] ProductDto productDto)
         {
-            var result = await _addService.AddItemAsync(product, CancellationToken.None);
+            var result = await _addService.AddItemAsync(productDto, CancellationToken.None);
 
             if (result.IsSuccess)
             {

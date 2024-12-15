@@ -1,4 +1,5 @@
-﻿using eshop.Application.eshop.Application.Products;
+﻿using eshop.Application.Categories;
+using eshop.Application.eshop.Application.Products;
 using eshop.Domain.Entities;
 using eshop.Infrastructure;
 using eshop.Infrastructure.Repositories;
@@ -18,9 +19,10 @@ namespace eshop.Application
             options.UseNpgsql(connectionString));
 
             //services.AddScoped<RepositoryFactory, DatabaseRepositoryFactory>();
-            services.AddScoped<IRepository<Product>, ProductRepository>();
-            services.AddScoped<GetProductService>();
-            services.AddScoped<AddProductService>();
+            services.AddScoped<IRepository<Product>, ProductRepository>()
+                .AddScoped<IRepository<Category>, CategoryRepository>();
+            services.AddScoped<GetProductService>().AddScoped<AddProductService>().
+                AddScoped<AddCategoryService>();
                      
             return services;
         }

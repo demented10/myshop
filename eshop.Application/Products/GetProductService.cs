@@ -26,7 +26,7 @@ namespace eshop.Application
                         .GetAllAsync(cancellationToken));
 
                     return Result.Ok(items
-                        .Select(i => new ProductDto(i.Id, i.Name, i.Price, i.Category.Id)));
+                        .Select(i => new ProductDto(i.Id, i.Name,i.Description, i.Price, i.CategoryId)));
                 }
                 catch (Exception ex)
                 {
@@ -40,7 +40,7 @@ namespace eshop.Application
                 try
                 {
                     var item = await _productRepository.GetByIdAsync(id, cancellationToken);
-                    return Result.Ok(new ProductDto(item.Id, item.Name, item.Price, item.Category.Id));
+                    return Result.Ok(new ProductDto(item.Id, item.Name, item.Description, item.Price, item.CategoryId));
                 }
                 catch (Exception ex)
                 {
@@ -49,12 +49,7 @@ namespace eshop.Application
                         .WithError(ex.StackTrace);
                 }
 
-
             }
         }
     }
-
-
-   
-    
 }
