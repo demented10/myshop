@@ -27,10 +27,11 @@ namespace eshop.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //create product realtions
-            modelBuilder.Entity<Product>().HasKey(p => p.Id).HasName("ProductPrimaryKey");
+            //modelBuilder.Entity<Product>().HasKey(p => p.Id).HasName("ProductPrimaryKey");
+            modelBuilder.Entity<Product>().HasOne(p => p.Category).WithMany(c => c.Products).HasForeignKey(p=>p.CategoryId);
          
             //create Category relations
-            modelBuilder.Entity<Category>();
+            //modelBuilder.Entity<Category>().HasMany<Product>();
             
         }
     }

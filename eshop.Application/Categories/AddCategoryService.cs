@@ -12,9 +12,9 @@ namespace eshop.Application.Categories
 {
     public class AddCategoryService
     {
-        private readonly IRepository<Category> _categoryRepository;
+        private readonly ICategoryRepository<Category> _categoryRepository;
 
-        public AddCategoryService(IRepository<Category> categoryRepository)
+        public AddCategoryService(ICategoryRepository<Category> categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }

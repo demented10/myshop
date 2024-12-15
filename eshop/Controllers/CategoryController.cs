@@ -1,4 +1,5 @@
 ﻿using eshop.Application.Categories;
+using eshop.Application.eshop.Application.Products;
 using eshop.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,12 @@ namespace eshop.Controllers
     public class CategoryController : Controller
     {
         private readonly AddCategoryService _addCategoryService;
-
-        public CategoryController(AddCategoryService addCategoryService) => _addCategoryService = addCategoryService;
+        private readonly GetCategoryService _getCategoryService;
+        public CategoryController(AddCategoryService addCategoryService, GetCategoryService getCategoryService) 
+        {
+            _addCategoryService = addCategoryService;
+            _getCategoryService = getCategoryService;
+        }
 
 
         [HttpPost]
@@ -26,6 +31,41 @@ namespace eshop.Controllers
 
             return BadRequest(result.Errors);
 
+        }
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<CategoryDto>> GetAsync(int id)
+        {
+            var result = await _getCategoryService.GetCategoryByIdAsync(id, CancellationToken.None);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value); 
+            }
+            return BadRequest(result.Errors);
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllAsync()
+        {
+            var result = await _getCategoryService.GetAllCategoriesAsync(CancellationToken.None);
+
+            if(result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Errors);
+        }
+
+        [HttpGet("categoryproducts{id:int}")]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProductsInCategoryAsync(int id)
+        {
+            var result = await _getCategoryService.GetAllProductsInCategoryAsync(id, CancellationToken.None);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Errors);
+           
         }
 
     }

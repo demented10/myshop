@@ -6,6 +6,7 @@ using eshop.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore.Proxies;
 
 
 namespace eshop.Application
@@ -16,13 +17,16 @@ namespace eshop.Application
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(connectionString)
+            .UseLazyLoadingProxies()
+            );
 
-            //services.AddScoped<RepositoryFactory, DatabaseRepositoryFactory>();
+            //Repositories
             services.AddScoped<IRepository<Product>, ProductRepository>()
-                .AddScoped<IRepository<Category>, CategoryRepository>();
+                .AddScoped<ICategoryRepository<Category>, CategoryRepository>();
+            //Services
             services.AddScoped<GetProductService>().AddScoped<AddProductService>().
-                AddScoped<AddCategoryService>();
+                AddScoped<AddCategoryService>().AddScoped<GetCategoryService>();
                      
             return services;
         }
