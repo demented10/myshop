@@ -9,6 +9,6 @@
         public required int StatusId { get; set; }
         public virtual OrderStatus? Status { get; set; }
         public required decimal TotalAmount { get; set; }
-        public ICollection<OrderItem>? OrderItems { get; set; }
+        public virtual ICollection<OrderItem>? OrderItems { get; set; }
     }
 }

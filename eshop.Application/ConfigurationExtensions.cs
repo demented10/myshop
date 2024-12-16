@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Proxies;
+using eshop.Domain.Repositories;
+using eshop.Application.Users;
 
 
 namespace eshop.Application
@@ -22,12 +24,14 @@ namespace eshop.Application
             );
 
             //Repositories
-            services.AddScoped<IRepository<Product>, ProductRepository>()
-                .AddScoped<ICategoryRepository<Category>, CategoryRepository>();
+            services.AddScoped<IProductRepository<Product>, ProductRepository>()
+                .AddScoped<ICategoryRepository<Category>, CategoryRepository>()
+                .AddScoped<IUserRepository<User>, UserRepository>();
             //Services
             services.AddScoped<GetProductService>().AddScoped<AddProductService>().
-                AddScoped<AddCategoryService>().AddScoped<GetCategoryService>();
-                     
+                AddScoped<AddCategoryService>().AddScoped<GetCategoryService>()
+                .AddScoped<UserRegistrationService>().AddScoped<UserAuthenticationService>().AddScoped<GetUsersService>();
+            
             return services;
         }
     }

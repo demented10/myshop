@@ -2,6 +2,8 @@
 using FluentResults;
 using eshop.Domain.Entities;
 using eshop.Infrastructure.Repositories;
+using eshop.Application.Categories;
+using eshop.Domain.Repositories;
 
 namespace eshop.Application
 {
@@ -11,9 +13,9 @@ namespace eshop.Application
     {
         public class GetProductService
         {
-            private readonly IRepository<Product> _productRepository;
+            private readonly IProductRepository<Product> _productRepository;
 
-            public GetProductService(IRepository<Product> productRepository)
+            public GetProductService(IProductRepository<Product> productRepository)
             {
                 _productRepository = productRepository;
             }
@@ -49,6 +51,18 @@ namespace eshop.Application
                         .WithError(ex.StackTrace);
                 }
 
+            }
+            public async Task<Result<CategoryDto>> GetProductCategoryAsync(int productId, CancellationToken cancellationToken)
+            {
+                try
+                {
+                    var item = await _productRepository.GetProductCategoryAsync(productId, cancellationToken);
+                    return Result.Ok(new CategoryDto(item.Category.Id, item.Category.Name));
+                }
+                catch(Exception ex)
+                {
+                    return Result.Fail("Не удалось получить категорию для товара").WithError(ex.Message).WithError(ex.StackTrace);
+                }
             }
         }
     }

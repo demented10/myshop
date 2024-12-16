@@ -56,7 +56,7 @@ namespace eshop.Controllers
             return BadRequest(result.Errors);
         }
 
-        [HttpGet("categoryproducts{id:int}")]
+        [HttpGet("{id:int}/products")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProductsInCategoryAsync(int id)
         {
             var result = await _getCategoryService.GetAllProductsInCategoryAsync(id, CancellationToken.None);
