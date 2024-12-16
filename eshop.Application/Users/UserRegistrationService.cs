@@ -1,38 +1,43 @@
 ﻿using eshop.Domain.Entities;
 using eshop.Domain.Repositories;
 using FluentResults;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BCrypt.Net;
 
 namespace eshop.Application.Users
 {
-    public class UserRegistrationService
+    public partial class UserRegistrationService
     {
         private readonly IUserRepository<User> _userRepository;
         public UserRegistrationService(IUserRepository<User> userRepository)
         {
             _userRepository = userRepository;
         }
-        public async Task<Result<UserDto>> RegistrateUserAsync(UserDto userDto)
+        public async Task<RegistrationResult> RegistrateUserAsync(UserRegistrationDto userRegistrationDto)
         {
             try
             {
+                var existingUser = await _userRepository.FindByEmailAsync(userRegistrationDto.email);
+                if(existingUser is not null)
+                {
+                    return RegistrationResult.Failure("Данный Email уже занят.", 409);
+                }
+
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegistrationDto.password);
+
                 var user = new User
                 {
-                    Name = userDto.name,
-                    Email = userDto.email
-
+                    Name = userRegistrationDto.name,
+                    Email = userRegistrationDto.email,
+                    PasswordHash = hashedPassword,
+                    isVerified = false
                 };
                 await _userRepository.CreateAsync(user);
-                return Result.Ok(new UserDto(user.Id,user.Name, user.Email));
+                return RegistrationResult.Success();
 
             }
             catch(Exception ex)
             {
-                return Result.Fail("Не удалось создать пользователя").WithError(ex.Message).WithError(ex.StackTrace);
+                return RegistrationResult.Failure($"{ex.Message}\n{ex.StackTrace}", 500);
             }
         }
     }

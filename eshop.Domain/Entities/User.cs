@@ -12,6 +12,11 @@ namespace eshop.Domain.Entities
         [Required]
         [MaxLength(200)]
         public required string Email { get; set; }
+        [Required]
+        [MinLength(8)]
+        public required string PasswordHash { get; set; }
+        public bool isVerified { get; set; }
+
         public virtual ICollection<Order>? Orders { get; set; }
     }
 }

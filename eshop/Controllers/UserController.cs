@@ -8,21 +8,34 @@ namespace eshop.Controllers
     public class UserController : Controller
     {
         private readonly UserRegistrationService _userRegistrationService;
+        private readonly GetUsersService _getUsersService;
 
-        public UserController(UserRegistrationService userRegistrationService)
+        public UserController(UserRegistrationService userRegistrationService, GetUsersService getUsersService)
         {
             _userRegistrationService = userRegistrationService;
+            _getUsersService = getUsersService;
         }
 
 
-        [HttpPost]
-        public async Task<ActionResult<UserDto>> Create([FromBody] UserDto userDto)
+        [HttpPost("registration")]
+        public async Task<IActionResult> Create([FromBody] UserRegistrationDto registrationUserDto)
         {
-            var result = await _userRegistrationService.RegistrateUserAsync(userDto);
+            var result = await _userRegistrationService.RegistrateUserAsync(registrationUserDto);
 
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(Create), new { result.Value.id}, result.Value);
+                return Ok("Регистрация прошла успешно");
+            }
+            return StatusCode((int)result.ErrorCode, result.ErrorMessage);
+        }
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsersAsync()
+        {
+            var result = await _getUsersService.GetAllUsersAsync(CancellationToken.None);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
             }
             return BadRequest(result.Errors);
         }
