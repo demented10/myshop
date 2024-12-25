@@ -30,7 +30,7 @@ namespace eshop.Controllers
 
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(Create), new { result.Value.id }, result.Value);
+                return CreatedAtAction(nameof(Create), new { result.Value.Id }, result.Value);
             }
 
             return BadRequest(result.Errors);

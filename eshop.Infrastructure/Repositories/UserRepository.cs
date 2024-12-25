@@ -44,10 +44,10 @@ namespace eshop.Infrastructure.Repositories
             var user = await _context.Users.FindAsync(id,CancellationToken.None);
             return user is null ? throw new ArgumentException($"User with id {id} not found.") : user;
         }
-        public async Task<User?> FindByEmailAsync(string email)
+        public async Task<User> FindByEmailAsync(string email)
         {
-          var result = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-          return result;
+          var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+          return user;
         }
         public async Task<IReadOnlyCollection<User>> GetAllAsync(CancellationToken cancellationToken = default)
         {

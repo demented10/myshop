@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace eshop.Application.Users
 {
-    public record AuthResultDto(string Token);
+    public record AuthResultDto(bool IsAuth, string Token);
 }

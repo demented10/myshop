@@ -1,44 +1,39 @@
 ﻿using eshop.Domain.Entities;
 using eshop.Domain.Repositories;
-using eshop.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentResults;
+using Microsoft.Extensions.Configuration;
+
 
 namespace eshop.Application.Users
 {
     public class UserAuthenticationService
     {
         private readonly IUserRepository<User> _userRepository;
-        private readonly IJwtTokenGenerator _jwtTokenGenerator;
-        public UserAuthenticationService(IUserRepository<User> userRepository, IJwtTokenGenerator jwtTokenGenerator)
+        private readonly IConfiguration _configuration;
+        public UserAuthenticationService(IUserRepository<User> userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
-            _jwtTokenGenerator = jwtTokenGenerator;
+            _configuration = configuration;
         }
 
-        public async Task<Result> AuthenticateUser(UserAuthenticationDto userDto) 
+        public async Task<Result<AuthResultDto>> AuthenticateUser(UserAuthenticationDto userDto) 
         {
             try
             {
-                var user = _userRepository.FindByEmailAsync(userDto.Email);
-                if(user is null)
+                var user = await _userRepository.FindByEmailAsync(userDto.Email);
+                if(user is null || !AuthenticationHelper.VerifyPassword(userDto.Password, user.PasswordHash))
                 {
                     return Result.Fail("Пользователь не найден");
                 }
-
-                var token = _jwtTokenGenerator.GenerateJwtToken(user.Id);
-
-
-                return Result.Ok();
+                var token = AuthenticationHelper.GenerateJwtToken(user, _configuration["JWT:Secret"]);
+                return Result.Ok(new AuthResultDto(true, token));
             }
             catch(Exception ex)
             {
-                return Result.Fail("Не удалось авторизироваться");
+                return Result.Fail("Не удалось авторизироваться").WithError(ex.Message).WithError(ex.StackTrace);
             }
         }
+       
+
     }
 }
