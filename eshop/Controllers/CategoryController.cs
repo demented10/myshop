@@ -22,11 +22,11 @@ namespace eshop.Controllers
         [HttpPost]
         public async Task<ActionResult<CategoryDto>> Create([FromBody] CategoryDto categoryDto)
         {
-            var result = await _addCategoryService.AddCategoryAsync(categoryDto, CancellationToken.None);
+            var result = await _addCategoryService.AddCategoryAsync(categoryDto);
 
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(Create), new {result.Value.id}, result.Value);
+                return CreatedAtAction(nameof(Create), new {result.Value.Id}, result.Value);
             }
 
             return BadRequest(result.Errors);

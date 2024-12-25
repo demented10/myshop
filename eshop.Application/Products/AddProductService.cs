@@ -24,10 +24,10 @@ namespace eshop.Application
                 try
                 {
                     var product = new Product{
-                        Name = productDto.name,
-                        Price = productDto.price,
-                        Description = productDto.description,
-                        CategoryId = productDto.categoryId
+                        Name = productDto.Name,
+                        Price = productDto.Price,
+                        Description = productDto.Description,
+                        CategoryId = productDto.CategoryId
                     };
                     await _productRepository.CreateAsync(product);
                     return Result.Ok(new ProductDto(product.Id, product.Name, product.Description, product.Price, product.CategoryId));

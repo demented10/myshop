@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace eshop.Application.Categories
 {
-    public record CategoryDto(int id, string name);
+    public record CategoryDto(int Id, string Name);
 
 }

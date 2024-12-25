@@ -1,6 +1,6 @@
 ﻿using eshop.Application.eshop.Application.Products;
 using eshop.Domain.Entities;
-using eshop.Infrastructure.Repositories;
+using eshop.Domain.Repositories;
 using FluentResults;
 using System;
 using System.Collections.Generic;

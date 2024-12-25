@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace eshop.Application.Users
 {
-    public record UserDto(int id, string name, string email);
+    public record UserDto(int Id, string Name, string Email);
 }

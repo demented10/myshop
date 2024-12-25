@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eshop.Infrastructure.Repositories
+namespace eshop.Domain.Repositories
 {
     public interface IReadOnlyRepository<T>
     {

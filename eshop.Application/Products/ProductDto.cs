@@ -3,7 +3,7 @@
 
     namespace eshop.Application.Products
     {
-        public record ProductDto(int id, string name, string description, decimal price, int categoryId);
+        public record ProductDto(int Id, string Name, string Description, decimal Price, int CategoryId);
     }
     
 }

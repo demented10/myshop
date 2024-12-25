@@ -41,7 +41,7 @@ namespace eshop.Infrastructure.Repositories
         public async Task<User> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.FindAsync(id,CancellationToken.None);
             return user is null ? throw new ArgumentException($"User with id {id} not found.") : user;
         }
         public async Task<User?> FindByEmailAsync(string email)
@@ -51,7 +51,7 @@ namespace eshop.Infrastructure.Repositories
         }
         public async Task<IReadOnlyCollection<User>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users.ToListAsync(cancellationToken);
         }
 
        

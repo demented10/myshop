@@ -26,7 +26,7 @@ namespace eshop.Controllers
             {
                 return Ok("Регистрация прошла успешно");
             }
-            return StatusCode((int)result.ErrorCode, result.ErrorMessage);
+            return BadRequest(result.Errors);
         }
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsersAsync()
