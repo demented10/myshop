@@ -1,8 +1,6 @@
 ﻿using eshop.Domain.Entities;
 using eshop.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Immutable;
-using System.Reflection.Metadata.Ecma335;
 
 namespace eshop.Infrastructure.Repositories
 {

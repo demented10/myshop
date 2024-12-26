@@ -21,7 +21,7 @@ namespace eshop.Application.Users
 
             var jwt = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),  // действие токена истекает через 2 минуты
+                expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
                 );
 
