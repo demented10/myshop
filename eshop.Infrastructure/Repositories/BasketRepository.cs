@@ -50,7 +50,7 @@ namespace eshop.Infrastructure.Repositories
             return basket is null ? throw new ArgumentException($"Basket with UserId {userId} not found.") : basket;
         }
 
-        public Task<IReadOnlyCollection<BasketItem>> GetBasketItemsAsync(int basketId)
+        public async Task<IReadOnlyCollection<BasketItem>> GetBasketItemsAsync(int basketId)
         {
             throw new NotImplementedException();
         }
