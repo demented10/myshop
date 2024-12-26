@@ -47,7 +47,7 @@
                 document.getElementById("userInfo").style.display = "block";
                 document.getElementById("loginForm").style.display = "none";
                 // сохраняем в хранилище sessionStorage токен доступа
-                sessionStorage.setItem(tokenKey, data.token);
+                localStorage.setItem(tokenKey, data.token);
             }
             else  // если произошла ошибка, получаем код статуса
                 console.log("Status: ", response.status);
@@ -57,7 +57,7 @@
         document.getElementById("getData").addEventListener("click", async e => {
             e.preventDefault();
             // получаем токен из sessionStorage
-            const token = sessionStorage.getItem(tokenKey);
+            const token = localStorage.getItem(tokenKey);
             // отправляем запрос к "/data
             const response = await fetch("/Auth/protected", {
                 method: "GET",
@@ -69,7 +69,7 @@
 
             if (response.ok === true) {
                 const data = await response.json();
-                alert(data.message);
+                alert(data.userId +"\n" + data.user);
             }
             else
                 console.log("Status: ", response.status);
@@ -82,7 +82,7 @@
             document.getElementById("userName").innerText = "";
             document.getElementById("userInfo").style.display = "none";
             document.getElementById("loginForm").style.display = "block";
-            sessionStorage.removeItem(tokenKey);
+            localStorage.removeItem(tokenKey);
         });
     </script>
 </body>

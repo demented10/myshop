@@ -33,7 +33,5 @@ namespace eshop.Application.Users
                 return Result.Fail("Не удалось авторизироваться").WithError(ex.Message).WithError(ex.StackTrace);
             }
         }
-       
-
     }
 }

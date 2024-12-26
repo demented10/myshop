@@ -32,10 +32,6 @@ namespace eshop.Application
                 AddScoped<AddCategoryService>().AddScoped<GetCategoryService>()
                 .AddScoped<UserRegistrationService>().AddScoped<GetUsersService>()
                 .AddTransient<UserAuthenticationService>();
-
-
-
-
             return services;
         }
     }

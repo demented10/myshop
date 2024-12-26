@@ -1,12 +1,17 @@
 ﻿using eshop.Application.eshop.Application.Products;
 using eshop.Application.Users;
+using eshop.Domain.Entities;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using NuGet.Common;
+using NuGet.Protocol;
+using System.Security.Claims;
 
 
 namespace eshop.Controllers
@@ -36,18 +41,13 @@ namespace eshop.Controllers
         }
         [Authorize]
         [HttpGet("protected")]
-        public async Task<ActionResult> Protected()
+        public ActionResult Protected()
         {
             //
-            return Ok(new { Message = "Protected resource accessed." });
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            return Json(new { userId, user});
         }
-        [HttpPost("unauth")]
-        public ActionResult UnAuth()
-        {
-                Response.Cookies.Delete(
-                 "jwt"
-                );
-                return Ok();
-        }
+        
     }
 }

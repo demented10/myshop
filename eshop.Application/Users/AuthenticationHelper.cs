@@ -13,24 +13,11 @@ namespace eshop.Application.Users
         {
             var claims = new[]
             {
-                //new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Email)
-                //,new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-
             };
 
             var key = Encoding.ASCII.GetBytes(secret);
-            //var tokenDescriptor = new SecurityTokenDescriptor
-            //{
-            //    Subject = new ClaimsIdentity(claims),
-            //    Expires = DateTime.UtcNow.AddMinutes(30),
-            //    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            //};
-
-            //var tokenHandler = new JwtSecurityTokenHandler();
-            //var token = tokenHandler.CreateToken(tokenDescriptor);
-            //return tokenHandler.WriteToken(token);
 
             var jwt = new JwtSecurityToken(
                 claims: claims,
