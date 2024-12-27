@@ -40,7 +40,7 @@ namespace eshop.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Baskets");
+                    b.ToTable("Baskets", (string)null);
                 });
 
             modelBuilder.Entity("eshop.Domain.Entities.BasketItem", b =>
@@ -66,7 +66,7 @@ namespace eshop.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("BasketItems");
+                    b.ToTable("BasketItems", (string)null);
                 });
 
             modelBuilder.Entity("eshop.Domain.Entities.Category", b =>
@@ -83,7 +83,7 @@ namespace eshop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("eshop.Domain.Entities.Order", b =>
@@ -112,7 +112,7 @@ namespace eshop.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("eshop.Domain.Entities.OrderItem", b =>
@@ -141,7 +141,7 @@ namespace eshop.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("eshop.Domain.Entities.OrderStatus", b =>
@@ -158,7 +158,7 @@ namespace eshop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrderStatuses");
+                    b.ToTable("OrderStatuses", (string)null);
                 });
 
             modelBuilder.Entity("eshop.Domain.Entities.Product", b =>
@@ -189,7 +189,7 @@ namespace eshop.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("eshop.Domain.Entities.User", b =>
@@ -225,7 +225,7 @@ namespace eshop.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("eshop.Domain.Entities.Basket", b =>

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Proxies;
 using eshop.Domain.Repositories;
 using eshop.Application.Users;
+using eshop.Application.Baskets;
 
 
 namespace eshop.Application
@@ -26,11 +27,13 @@ namespace eshop.Application
             //Repositories
             services.AddScoped<IProductRepository<Product>, ProductRepository>()
                 .AddScoped<ICategoryRepository<Category>, CategoryRepository>()
-                .AddScoped<IUserRepository<User>, UserRepository>();
+                .AddScoped<IUserRepository<User>, UserRepository>()
+                .AddScoped<IBasketRepository<Basket>, BasketRepository>();
             //Services
             services.AddScoped<GetProductService>().AddScoped<AddProductService>().
                 AddScoped<AddCategoryService>().AddScoped<GetCategoryService>()
                 .AddScoped<UserRegistrationService>().AddScoped<GetUsersService>()
+                .AddScoped<CreateBasketService>()
                 .AddTransient<UserAuthenticationService>();
             return services;
         }
