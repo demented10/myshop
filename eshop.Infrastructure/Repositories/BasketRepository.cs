@@ -44,10 +44,10 @@ namespace eshop.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<Basket> GetBasketByUserIdAsync(int userId)
+        public async Task<IReadOnlyCollection<Basket>> GetBasketsByUserIdAsync(int userId)
         {
-            var basket = await _context.Baskets.FirstOrDefaultAsync(t => t.UserId == userId);
-            return basket is null ? throw new ArgumentException($"Basket with UserId {userId} not found.") : basket;
+            var basket = await _context.Baskets.Where(t => t.UserId == userId).ToListAsync();
+            return basket;
         }
 
         public async Task<IReadOnlyCollection<BasketItem>> GetBasketItemsAsync(int basketId)

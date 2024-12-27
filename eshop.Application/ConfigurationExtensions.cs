@@ -33,7 +33,7 @@ namespace eshop.Application
             services.AddScoped<GetProductService>().AddScoped<AddProductService>().
                 AddScoped<AddCategoryService>().AddScoped<GetCategoryService>()
                 .AddScoped<UserRegistrationService>().AddScoped<GetUsersService>()
-                .AddScoped<CreateBasketService>()
+                .AddScoped<CreateBasketService>().AddScoped<GetBasketService>()
                 .AddTransient<UserAuthenticationService>();
             return services;
         }

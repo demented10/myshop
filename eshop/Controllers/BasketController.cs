@@ -8,13 +8,15 @@ namespace eshop.Controllers
     public class BasketController : Controller
     {
         private readonly CreateBasketService _createBasketService;
-
-        public BasketController(CreateBasketService createBasketService)
+        private readonly GetBasketService _getBasketService;
+        public BasketController(CreateBasketService createBasketService, GetBasketService getBasketService)
         {
             _createBasketService = createBasketService;
+            _getBasketService = getBasketService;
+
         }
 
-        [HttpPost("CreateBasket/{userId:int}")]
+        [HttpPost("createBasket/{userId:int}")]
         public async Task<ActionResult<BasketDto>> CreateBasket(int userId)
         {
             var result = await _createBasketService.CreateBasketForUserAsync(userId);
@@ -26,6 +28,39 @@ namespace eshop.Controllers
 
             return BadRequest(result.Errors);
 
+        }
+        [HttpGet("getBasket/{id:int}")]
+        public async Task<ActionResult<BasketDto>> GetBasket(int id)
+        {
+            var result = await _getBasketService.GetBasketByIdAsync(id);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+
+            return BadRequest(result.Errors);
+        }
+        [HttpGet("getBaskets")]
+        public async Task<ActionResult<IEnumerable<BasketDto>>> GetBaskets()
+        {
+            var result = await _getBasketService.GetAllBasketsAsync();
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Errors);
+        }
+        [HttpGet("getUserBaskets/{userId:int}")]
+        public async Task<ActionResult<IEnumerable<BasketDto>>> GetUserBaskets(int userId)
+        {
+            var result = await _getBasketService.GetBasketsByUserAsync(userId);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Errors);
         }
 
     }    
