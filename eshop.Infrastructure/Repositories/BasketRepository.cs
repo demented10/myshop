@@ -50,9 +50,15 @@ namespace eshop.Infrastructure.Repositories
             return basket;
         }
 
-        public async Task<IReadOnlyCollection<BasketItem>> GetBasketItemsAsync(int basketId)
+        public async Task<Basket> GetBasketItemsAsync(int basketId)
         {
-            throw new NotImplementedException();
+            var baskets = await _context.Baskets
+                .Include(bi => bi.BasketItems)
+                .FirstOrDefaultAsync(b => b.Id == basketId); ;
+            if (baskets is null)
+                throw new Exception("Basket doesnt exists");
+
+            return baskets;
         }
     }
 }

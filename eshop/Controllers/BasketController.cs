@@ -1,19 +1,24 @@
-﻿using eshop.Application.Baskets;
+﻿using eshop.Application.BasketItems;
+using eshop.Application.Baskets;
 using eshop.Application.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eshop.Controllers
 {
-    [Route("[controller]")]
+    [ApiController]
+    [Route("api/[controller]")]
     public class BasketController : Controller
     {
         private readonly CreateBasketService _createBasketService;
         private readonly GetBasketService _getBasketService;
-        public BasketController(CreateBasketService createBasketService, GetBasketService getBasketService)
+        private readonly DeleteBasketService _deleteBasketService;
+        public BasketController(CreateBasketService createBasketService, 
+            GetBasketService getBasketService, 
+            DeleteBasketService deleteBasketService)
         {
             _createBasketService = createBasketService;
             _getBasketService = getBasketService;
-
+            _deleteBasketService = deleteBasketService;
         }
 
         [HttpPost("createBasket/{userId:int}")]
@@ -60,6 +65,26 @@ namespace eshop.Controllers
             {
                 return Ok(result.Value);
             }
+            return BadRequest(result.Errors);
+        }
+        [HttpGet("{basketId:int}/getBasketItems")]
+        public async Task<ActionResult<IEnumerable<BasketItemDto>>> GetBasketItems(int basketId)
+        {
+            var result = await _getBasketService.GetAllBasketItemsAsync(basketId);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Errors);
+        }
+
+        [HttpPost("deleteBasket")]
+        public async Task<ActionResult> deleteBasketById([FromBody]int basketId)
+        {
+            var result = await _deleteBasketService.DeleteBasketAsync(basketId);
+            if (result.IsSuccess)
+                return Ok();
             return BadRequest(result.Errors);
         }
 

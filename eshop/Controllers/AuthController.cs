@@ -16,7 +16,8 @@ using System.Security.Claims;
 
 namespace eshop.Controllers
 {
-    [Route("[controller]")]
+    [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : Controller
     {
         private readonly UserAuthenticationService _userAuthenticationService;

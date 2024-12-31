@@ -30,7 +30,7 @@
         document.getElementById("submitLogin").addEventListener("click", async e => {
             e.preventDefault();
             // отправляет запрос и получаем ответ
-            const response = await fetch("/Auth/auth", {
+            const response = await fetch("api/Auth/auth", {
                 method: "POST",
                 headers: { "Accept": "application/json", "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -59,7 +59,7 @@
             // получаем токен из sessionStorage
             const token = localStorage.getItem(tokenKey);
             // отправляем запрос к "/data
-            const response = await fetch("/Auth/protected", {
+            const response = await fetch("api/Auth/protected", {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",

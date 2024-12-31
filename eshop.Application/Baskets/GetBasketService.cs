@@ -1,4 +1,5 @@
-﻿using eshop.Application.Users;
+﻿using eshop.Application.BasketItems;
+using eshop.Application.Users;
 using eshop.Domain.Entities;
 using eshop.Domain.Repositories;
 using FluentResults;
@@ -62,5 +63,18 @@ namespace eshop.Application.Baskets
                 return Result.Fail($"Не удалось получить корзины для пользователя с id {userId}").WithError(ex.Message).WithError(ex.StackTrace);
             }
         }
+        public async Task<Result<IEnumerable<BasketItemDto>>> GetAllBasketItemsAsync(int basketId)
+        {
+            try
+            {
+                var basket = await _basketRepository.GetBasketItemsAsync(basketId);
+                return Result.Ok(basket.BasketItems.Select(bi => new BasketItemDto(bi.BasketId, bi.ProductId, bi.Quantity)));
+            }
+            catch(Exception ex)
+            {
+                return Result.Fail($"Не удалось получить предметы в корзине с id {basketId}").WithError(ex.Message).WithError(ex.StackTrace);
+            }
+        }
+
     }
 }

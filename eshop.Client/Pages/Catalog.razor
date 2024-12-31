@@ -1,0 +1,60 @@
+﻿@page "/catalog"
+@inject HttpClient Http
+
+<PageTitle>Каталог</PageTitle>
+
+<h1>Каталог товаров</h1>
+@if (_products == null)
+{
+    <p><em>Загрузка...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Идентификатор</th>
+                <th>Наименования</th>
+                <th>Описание</th>
+                <th>Цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in _products)
+            {
+                <tr>
+                    <td>@product.Id</td>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Product> _products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _products = await Http.GetFromJsonAsync<List<Product>>(Http.BaseAddress.AbsolutePath+"/Product/all");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка: {ex.Message}");
+        }
+    }
+    // Models/Product.cs
+    public class Product
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description{ get; set; }
+        public decimal Price { get; set; }
+        public int CategoryId { get; set; }
+    }
+    //int Id, string Name, string Description, decimal Price, int CategoryId
+}

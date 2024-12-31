@@ -1,0 +1,44 @@
+﻿@page "/http-request-window"
+<h3>Ввод URL</h3>
+<EditForm Model="@httpRequestModel">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText @bind-Value="httpRequestModel.Url" placeholder="Введите URL..." />
+    <button type="submit" class="btn btn-primary" @onclick="SendHttpRequest">Отправить</button>
+</EditForm>
+
+@if (!string.IsNullOrWhiteSpace(httpResponse))
+{
+    <pre style="white-space: pre-wrap; margin-top: 10px;">Ответ сервера: @httpResponse</pre>
+}
+
+@code {
+    private HttpRequestModel httpRequestModel { get; set; } = new();
+    private string httpResponse { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        httpRequestModel = new HttpRequestModel();
+    }
+
+    private async Task SendHttpRequest()
+    {
+        try
+        {
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetStringAsync(httpRequestModel.Url);
+            httpResponse = response;
+        }
+        catch (Exception ex)
+        {
+            httpResponse = $"Ошибка при выполнении запроса: {ex.Message}";
+        }
+    }
+
+    public class HttpRequestModel
+    {
+        public string Url { get; set; } = "";
+    }
+}

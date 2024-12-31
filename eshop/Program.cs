@@ -1,16 +1,31 @@
 using eshop.Application;
+using eshop.Filters;
+using eshop.Middlewares;
+using FluentResults;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
 using System.Configuration;
 using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+var logger = new LoggerConfiguration()
+    .Enrich.WithProperty("ApplicationName", "eshop")
+    .Enrich.FromLogContext()
+    .ReadFrom.Configuration(builder.Configuration)
+    .WriteTo.Console()
+    .WriteTo.File(new CompactJsonFormatter(), "logs.txt")
+    .CreateLogger();
+
+builder.Services.AddSerilog(logger);
+Log.Logger = logger;
 
 builder.Services.RegisterApplicationServices(builder.Configuration);
 
@@ -28,7 +43,35 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
     };
 });
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<IncomingRequestFilter>();
+    options.Filters.Add<GlobalExceptionFilter>();
+})
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var modelErrors = context.ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(x => x.Exception?.Message ?? x.ErrorMessage)
+            .ToArray();
+            var result = Result.Fail(modelErrors);
+
+            return new BadRequestObjectResult(result.ToString());
+        };
+    });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "AllowAnyOrigin",
+       policy =>
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 //auth
 
@@ -40,7 +83,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+app.UseAuthentication();
+app.UseMiddleware<LogUserMiddleware>();
+
+
+app.UseSerilogRequestLogging(ops =>
+{
+    ops.Logger = logger;
+});
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -52,16 +103,19 @@ if (app.Environment.IsDevelopment())
 }
 
 
+//app.UseHttpsRedirection();
+
 app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
-
 app.UseRouting();
+app.UseCors("AllowAnyOrigin");
 
-app.UseAuthentication();
+
+
+
 app.UseAuthorization();
 
-app.MapRazorPages();
 
 app.MapControllers();
 

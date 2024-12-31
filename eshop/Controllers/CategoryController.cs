@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace eshop.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CategoryController : Controller
     {
         private readonly AddCategoryService _addCategoryService;

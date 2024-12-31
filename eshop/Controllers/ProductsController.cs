@@ -11,7 +11,7 @@ using eshop.Application.Categories;
 namespace eshop.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ProductController : Controller
     {
         private readonly AddProductService _addService;
@@ -41,7 +41,7 @@ namespace eshop.Controllers
             var result = await _getProductService.GetItemsAsync(CancellationToken.None);
             if (result.IsSuccess)
             {
-                return Ok(result.Value);
+                return Json(result.Value);
             }
             return BadRequest(result.Errors);
         }
