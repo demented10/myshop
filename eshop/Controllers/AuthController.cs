@@ -28,7 +28,7 @@ namespace eshop.Controllers
         }
         
         [HttpPost("auth")]
-        public async Task<ActionResult<AuthResultDto>> Auth([FromBody]UserAuthenticationDto user)
+        public async Task<ActionResult<TokenDto>> Auth([FromBody]UserAuthenticationDto user)
         {
             var result = await _userAuthenticationService.AuthenticateUser(user);
 
@@ -38,6 +38,17 @@ namespace eshop.Controllers
                 return Json(new { Token = token });
             }
 
+            return BadRequest(result.Errors);
+        }
+        [HttpPost("validate")]
+        public async Task<ActionResult> Validate([FromBody] TokenDto tokenDto)
+        {
+            var result = await _userAuthenticationService.ValidateJwtTokenAsync(tokenDto);
+
+            if (result.IsSuccess)
+            {
+                return Ok();
+            }
             return BadRequest(result.Errors);
         }
         [Authorize]

@@ -16,25 +16,35 @@ namespace eshop.Client
         }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
+            //var principal = new ClaimsPrincipal(new ClaimsIdentity());
+            //var user = await _userService.FetchUserFromBrowser();
+
+            //if (user is not null)
+            //{
+            //    var authenticatedUser = await _userService.SendAuthenticateRequestAsync(user.UserEmail, user.Password);
+            //    CurrentUser = authenticatedUser;
+
+            //    if (authenticatedUser is not null)
+            //    {
+            //        principal = authenticatedUser.ToClaimsPrincipal();
+
+            //    }
+
+            //}
+
+            //return new(principal);
+            
+            var isValid = await _userService.ValidateJwtTokenAsync();
             var principal = new ClaimsPrincipal(new ClaimsIdentity());
-            var user = await _userService.FetchUserFromBrowser();
-
-            if (user is not null)
-            {
-                var authenticatedUser = await _userService.SendAuthenticateRequestAsync(user.UserEmail, user.Password);
-                CurrentUser = authenticatedUser;
-                
-                if (authenticatedUser is not null)
-                {
-                    principal = authenticatedUser.ToClaimsPrincipal();
-                
-                }
-
+            if (isValid)
+            {             
+                var user = await _userService.FetchUserFromBrowser();
+                CurrentUser = user;
+                principal = user.ToClaimsPrincipal();
             }
-
             return new(principal);
         }
-        
+
         public async Task LoginAsync(string username, string password)
         {
             var principal = new ClaimsPrincipal();

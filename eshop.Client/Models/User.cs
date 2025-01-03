@@ -12,13 +12,11 @@ namespace eshop.Client.Models
         {
             new (ClaimTypes.Name, UserName),
             new (ClaimTypes.Email, UserEmail),
-            new (ClaimTypes.Hash, Password)
         }.Concat(Roles.Select(r => new Claim(ClaimTypes.Role, r)).ToArray()), "jwt"));
         public static User FromClaimsPrincipal(ClaimsPrincipal principal) => new()
         {
             UserName = principal.FindFirst(ClaimTypes.Name)?.Value ?? "",
             UserEmail = principal.FindFirst(ClaimTypes.Email)?.Value ?? "",
-            Password = principal.FindFirst(ClaimTypes.Hash)?.Value ?? "",
             Roles = principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList()
         };
     }

@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using eshop.Client.Models;
+using Microsoft.AspNetCore.Components.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -54,6 +55,16 @@ namespace eshop.Client.Services
             var user = User.FromClaimsPrincipal(claimsPrincipal);
            
             return user;
+        }
+        public async Task<bool> ValidateJwtTokenAsync()
+        {
+            var token = await _localStorage.GetItemAsync<string>(AUTH_KEY);
+            var response = await _httpClient.PostAsJsonAsync($"{_httpClient.BaseAddress}/Auth/validate", new { token = token });
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
         }
         public void ClearBrowserUserData() => _localStorage.RemoveItemAsync(AUTH_KEY);
     }
