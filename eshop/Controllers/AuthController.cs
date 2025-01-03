@@ -35,7 +35,7 @@ namespace eshop.Controllers
             if (result.IsSuccess)
             {
                 var token = result.Value.Token;
-                return Json(new { Email = user.Email, Token = token });
+                return Json(new { Token = token });
             }
 
             return BadRequest(result.Errors);

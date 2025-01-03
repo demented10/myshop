@@ -1,51 +1,83 @@
-﻿@page "/catalog"
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
+@page "/catalog"
+@inject CustomAuthenticationStateProvider AuthStateProvider
 @inject HttpClient Http
 
-<PageTitle>Каталог</PageTitle>
-
-<h1>Каталог товаров</h1>
-@if (_products == null)
-{
-    <p><em>Загрузка...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Идентификатор</th>
-                <th>Наименования</th>
-                <th>Описание</th>
-                <th>Цена</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var product in _products)
-            {
-                <tr>
-                    <td>@product.Id</td>
-                    <td>@product.Name</td>
-                    <td>@product.Description</td>
-                    <td>@product.Price</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<AuthorizeView> 
+<NotAuthorized>
+    <PageTitle>Запрещено</PageTitle>
+    <div class="alert alert-danger mt-4">
+        <strong>Доступ запрещен!</strong> Вы должны войти в систему, чтобы просмотреть эту страницу.
+    </div>
+</NotAuthorized>
+<Authorized>
+    <PageTitle>Каталог</PageTitle>
+    <h1>Каталог товаров</h1>
+    @if (_products == null)
+        {
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Идентификатор</th>
+                        <th>Наименования</th>
+                        <th>Описание</th>
+                        <th>Цена</th>
+                        <th>Категория</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in _products)
+                    {
+                        <tr>
+                            <td>@product.Id</td>
+                            <td>@product.Name</td>
+                            <td>@product.Description</td>
+                            <td>@product.Price</td>
+                            <td>@GetCategory(product).Name</td>
+                            <td><button @onclick="@(() => AddToCart(product))">В корзину</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+</AuthorizeView>
 
 @code {
-    private List<Product> _products;
-
+    private List<Product>? _products;
+    private List<Category>? _categories;
+    private bool isAuth = false;
     protected override async Task OnInitializedAsync()
     {
-        try
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        isAuth = authState.User.Identity.IsAuthenticated;
+        if (isAuth)
         {
-            _products = await Http.GetFromJsonAsync<List<Product>>(Http.BaseAddress.AbsolutePath+"/Product/all");
+            try
+            {
+                _products = await Http.GetFromJsonAsync<List<Product>>(Http.BaseAddress + "/Product/all");
+                _categories = await Http.GetFromJsonAsync<List<Category>>(Http.BaseAddress + "/Category/all");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Ошибка: {ex.Message}");
-        }
+    }
+    private void AddToCart(Product product)
+    {
+        //CartItems.Add(product);
+        Console.WriteLine($"{product.Name} добавлен в корзину.");
+    }
+    private Category GetCategory(Product product)
+    {
+        var category = _categories.First(c => c.Id == product.CategoryId);
+        return category;
     }
     // Models/Product.cs
     public class Product
@@ -55,6 +87,12 @@ else
         public string Description{ get; set; }
         public decimal Price { get; set; }
         public int CategoryId { get; set; }
+
+    }
+    public class Category
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
     }
     //int Id, string Name, string Description, decimal Price, int CategoryId
 }
