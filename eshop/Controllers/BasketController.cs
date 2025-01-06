@@ -67,6 +67,17 @@ namespace eshop.Controllers
             }
             return BadRequest(result.Errors);
         }
+        [HttpGet("getCurrentUserBasket/{userId:int}")]
+        public async Task<ActionResult<BasketDto>> GetCurrentUserBasket(int userId)
+        {
+            var result = await _getBasketService.GetCurrentUserBasketAsync(userId);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Errors);
+        }
         [HttpGet("{basketId:int}/getBasketItems")]
         public async Task<ActionResult<IEnumerable<BasketItemDto>>> GetBasketItems(int basketId)
         {

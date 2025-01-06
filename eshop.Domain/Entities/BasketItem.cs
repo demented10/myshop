@@ -2,7 +2,7 @@
 {
     public class BasketItem
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public required int BasketId { get; set; }
         public virtual Basket? Basket { get; set; }
         public required int ProductId { get; set; }

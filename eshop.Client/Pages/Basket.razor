@@ -1,0 +1,57 @@
+
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
+@inject CustomAuthenticationStateProvider authStateProvider
+@inject HttpClient httpClient
+@inject BasketService basketService
+
+@page "/basket"
+<table class="table">
+    <thead>
+        <tr>
+            <th>Наименование</th>
+            <th>Описание</th>
+            <th>Цена</th>
+            <th>Количество</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if(basket is not null)
+        {
+            @foreach (var basketItem in basket.BasketItems)
+            {
+                <tr>
+                    <td>@basketItem.product.Name</td>
+                    <td>@basketItem.product.Description</td>
+                    <td>@basketItem.product.Price</td>
+                    <td>
+                        <button class="btn btn-outline-danger" @onclick="@(() => ChangeItemCount(-1, basketItem.product.Id))">-</button>
+                        @basketItem.Quantity
+                        <button class="btn btn-outline-success" @onclick="@(() => ChangeItemCount(1, basketItem.product.Id))">+</button></td>
+                    <td><button class="btn btn-danger" @onclick="@(() => RemoveFromBasket(basketItem.product.Id))">Убрать</button></td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@code {
+    private bool isAuth = false;
+    private Models.Basket.Basket? basket;
+    protected override async Task OnInitializedAsync()
+    {
+        basket = await basketService.GetBasketAsync();
+    }
+    private async Task RemoveFromBasket(int productId)
+    {
+        await basketService.RemoveItemAsync(productId);
+        basket = await basketService.GetBasketAsync();
+    }
+    private async Task ChangeItemCount(int count, int productId)
+    {
+        await basketService.ChangeItemCount(count, productId);
+        basket = await basketService.GetBasketAsync();
+    }
+}
+    
+    

@@ -32,9 +32,7 @@ namespace eshop.Application.Users
         }
         public static bool VerifyPassword(string password, string hashPassword)
         {
-            
-            return BCrypt.Net.BCrypt.Verify(password, hashPassword) ? true : password == hashPassword;
+            return BCrypt.Net.BCrypt.Verify(password, hashPassword);
         }
-
     }
 }

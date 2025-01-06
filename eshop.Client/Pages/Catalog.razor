@@ -3,6 +3,7 @@
 @page "/catalog"
 @inject CustomAuthenticationStateProvider AuthStateProvider
 @inject HttpClient Http
+@inject BasketService basketService
 
 <AuthorizeView> 
 <NotAuthorized>
@@ -28,6 +29,7 @@
                         <th>Описание</th>
                         <th>Цена</th>
                         <th>Категория</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,7 +41,7 @@
                             <td>@product.Description</td>
                             <td>@product.Price</td>
                             <td>@GetCategory(product).Name</td>
-                            <td><button @onclick="@(() => AddToCart(product))">В корзину</button></td>
+                            <td><button class="btn btn-outline-dark" @onclick="@(() => AddToBasket(product))">В корзину</button></td>
                         </tr>
                     }
                 </tbody>
@@ -49,8 +51,8 @@
 </AuthorizeView>
 
 @code {
-    private List<Product>? _products;
-    private List<Category>? _categories;
+    private List<ProductViewModel>? _products;
+    private List<CategoryViewModel>? _categories;
     private bool isAuth = false;
     protected override async Task OnInitializedAsync()
     {
@@ -60,8 +62,8 @@
         {
             try
             {
-                _products = await Http.GetFromJsonAsync<List<Product>>(Http.BaseAddress + "/Product/all");
-                _categories = await Http.GetFromJsonAsync<List<Category>>(Http.BaseAddress + "/Category/all");
+                _products = await Http.GetFromJsonAsync<List<ProductViewModel>>(Http.BaseAddress + "/Product/all");
+                _categories = await Http.GetFromJsonAsync<List<CategoryViewModel>>(Http.BaseAddress + "/Category/all");
             }
             catch (Exception ex)
             {
@@ -69,18 +71,28 @@
             }
         }
     }
-    private void AddToCart(Product product)
+    private async Task AddToBasket(ProductViewModel product)
     {
-        //CartItems.Add(product);
+        await basketService.AddBasketItemAsync(new Models.Basket.BasketItem
+            {
+                product = new Models.Product
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price
+                },
+                Quantity = 1
+            });
         Console.WriteLine($"{product.Name} добавлен в корзину.");
     }
-    private Category GetCategory(Product product)
+    private CategoryViewModel GetCategory(ProductViewModel product)
     {
         var category = _categories.First(c => c.Id == product.CategoryId);
         return category;
     }
     // Models/Product.cs
-    public class Product
+    public class ProductViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -89,10 +101,9 @@
         public int CategoryId { get; set; }
 
     }
-    public class Category
+    public class CategoryViewModel
     {
         public int Id { get; set; }
         public string? Name { get; set; }
     }
-    //int Id, string Name, string Description, decimal Price, int CategoryId
 }

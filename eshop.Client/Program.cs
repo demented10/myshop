@@ -16,6 +16,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
 sp.GetRequiredService<CustomAuthenticationStateProvider>());
+builder.Services.AddScoped<BasketService>();
 builder.Services.AddAuthorizationCore();
 
 await builder.Build().RunAsync();

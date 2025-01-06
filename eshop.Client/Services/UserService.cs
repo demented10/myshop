@@ -5,6 +5,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Net.Http.Headers;
+using System.Net;
 
 namespace eshop.Client.Services
 {
@@ -53,7 +55,6 @@ namespace eshop.Client.Services
             var token = await  _localStorage.GetItemAsync<string>(AUTH_KEY);
             var claimsPrincipal = CreateClaimsPrincipalFromToken(token);
             var user = User.FromClaimsPrincipal(claimsPrincipal);
-           
             return user;
         }
         public async Task<bool> ValidateJwtTokenAsync()
@@ -61,11 +62,16 @@ namespace eshop.Client.Services
             var token = await _localStorage.GetItemAsync<string>(AUTH_KEY);
             var response = await _httpClient.PostAsJsonAsync($"{_httpClient.BaseAddress}/Auth/validate", new { token = token });
             if (response.IsSuccessStatusCode)
-            {
+            {   
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
                 return true;
             }
             return false;
         }
-        public void ClearBrowserUserData() => _localStorage.RemoveItemAsync(AUTH_KEY);
+        public void ClearBrowserUserData()
+        { 
+            _localStorage.RemoveItemAsync(AUTH_KEY);
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+        }
     }
 }

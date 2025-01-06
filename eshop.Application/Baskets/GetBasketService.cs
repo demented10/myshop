@@ -26,6 +26,10 @@ namespace eshop.Application.Baskets
             try
             {
                 var basket = await _basketRepository.GetByIdAsync(id);
+                if(basket is null)
+                {
+                    return Result.Fail($"Не существует корзины с id {id}");
+                }
                 return Result.Ok(new BasketDto(basket.Id, basket.UserId));
 
             }
@@ -61,6 +65,25 @@ namespace eshop.Application.Baskets
             catch(Exception ex)
             {
                 return Result.Fail($"Не удалось получить корзины для пользователя с id {userId}").WithError(ex.Message).WithError(ex.StackTrace);
+            }
+        }
+        public async Task<Result<BasketDto>> GetCurrentUserBasketAsync(int userId)
+        {
+            try
+            {
+                var items = await _basketRepository.GetBasketsByUserIdAsync(userId);
+                
+                if (!items.Any())
+                {
+                    await _basketRepository.CreateAsync(new Basket { UserId = userId });
+                    items = await _basketRepository.GetBasketsByUserIdAsync(userId);
+                }
+                var maxIdBasket = items.OrderByDescending(item => item.Id).FirstOrDefault();
+                return Result.Ok(new BasketDto(maxIdBasket.Id, userId));
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail($"Не удалось получить актуальную корзину для пользователя с id {userId}").WithError(ex.Message).WithError(ex.StackTrace);
             }
         }
         public async Task<Result<IEnumerable<BasketItemDto>>> GetAllBasketItemsAsync(int basketId)

@@ -16,24 +16,6 @@ namespace eshop.Client
         }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            //var principal = new ClaimsPrincipal(new ClaimsIdentity());
-            //var user = await _userService.FetchUserFromBrowser();
-
-            //if (user is not null)
-            //{
-            //    var authenticatedUser = await _userService.SendAuthenticateRequestAsync(user.UserEmail, user.Password);
-            //    CurrentUser = authenticatedUser;
-
-            //    if (authenticatedUser is not null)
-            //    {
-            //        principal = authenticatedUser.ToClaimsPrincipal();
-
-            //    }
-
-            //}
-
-            //return new(principal);
-            
             var isValid = await _userService.ValidateJwtTokenAsync();
             var principal = new ClaimsPrincipal(new ClaimsIdentity());
             if (isValid)
@@ -41,6 +23,7 @@ namespace eshop.Client
                 var user = await _userService.FetchUserFromBrowser();
                 CurrentUser = user;
                 principal = user.ToClaimsPrincipal();
+                
             }
             return new(principal);
         }
@@ -50,10 +33,12 @@ namespace eshop.Client
             var principal = new ClaimsPrincipal();
             var user = await _userService.SendAuthenticateRequestAsync(username, password);
             CurrentUser = user;
+            
             if (user is not null)
             {
-                principal = user.ToClaimsPrincipal();
-                
+                var isValid = await _userService.ValidateJwtTokenAsync();
+                if(isValid)
+                    principal = user.ToClaimsPrincipal();
             }
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));

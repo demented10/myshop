@@ -1,4 +1,5 @@
-﻿@page "/http-request-window"
+﻿@inject HttpClient httpClient
+@page "/http-request-window"
 <h3>Ввод URL</h3>
 <EditForm Model="@httpRequestModel">
     <DataAnnotationsValidator />
@@ -27,7 +28,6 @@
     {
         try
         {
-            using var httpClient = new HttpClient();
             var response = await httpClient.GetStringAsync(httpRequestModel.Url);
             httpResponse = response;
         }

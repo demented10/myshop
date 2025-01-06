@@ -33,5 +33,6 @@ namespace eshop.Application.BasketItems
                     .WithError(ex.StackTrace);
             }
         }
+       
     }
 }
