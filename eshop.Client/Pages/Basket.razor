@@ -35,9 +35,10 @@
         }
     </tbody>
 </table>
+<button class="btn btn-outline-info">ќформить заказ</button>
 @code {
     private bool isAuth = false;
-    private Models.Basket.Basket? basket;
+    private Models.Basket.Basket basket = new();
     protected override async Task OnInitializedAsync()
     {
         basket = await basketService.GetBasketAsync();
@@ -49,8 +50,11 @@
     }
     private async Task ChangeItemCount(int count, int productId)
     {
-        await basketService.ChangeItemCount(count, productId);
-        basket = await basketService.GetBasketAsync();
+        var currentCount = await basketService.ChangeItemCount(count, productId);
+        if (currentCount <= 0)
+            basket = await basketService.GetBasketAsync();
+        else
+            basket.BasketItems.First(bi => bi.product.Id == productId).Quantity = currentCount;
     }
 }
     

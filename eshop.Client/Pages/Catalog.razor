@@ -5,14 +5,7 @@
 @inject HttpClient Http
 @inject BasketService basketService
 
-<AuthorizeView> 
-<NotAuthorized>
-    <PageTitle>Запрещено</PageTitle>
-    <div class="alert alert-danger mt-4">
-        <strong>Доступ запрещен!</strong> Вы должны войти в систему, чтобы просмотреть эту страницу.
-    </div>
-</NotAuthorized>
-<Authorized>
+
     <PageTitle>Каталог</PageTitle>
     <h1>Каталог товаров</h1>
     @if (_products == null)
@@ -47,29 +40,24 @@
                 </tbody>
             </table>
         }
-    </Authorized>
-</AuthorizeView>
+
 
 @code {
     private List<ProductViewModel>? _products;
     private List<CategoryViewModel>? _categories;
-    private bool isAuth = false;
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        isAuth = authState.User.Identity.IsAuthenticated;
-        if (isAuth)
+
+        try
         {
-            try
-            {
-                _products = await Http.GetFromJsonAsync<List<ProductViewModel>>(Http.BaseAddress + "/Product/all");
-                _categories = await Http.GetFromJsonAsync<List<CategoryViewModel>>(Http.BaseAddress + "/Category/all");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка: {ex.Message}");
-            }
+            _products = await Http.GetFromJsonAsync<List<ProductViewModel>>(Http.BaseAddress + "/Product/all");
+            _categories = await Http.GetFromJsonAsync<List<CategoryViewModel>>(Http.BaseAddress + "/Category/all");
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка: {ex.Message}");
+        }
+        
     }
     private async Task AddToBasket(ProductViewModel product)
     {

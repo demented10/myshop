@@ -30,11 +30,11 @@ namespace eshop.Infrastructure
             //modelBuilder.Entity<Category>().HasMany<Product>();
             modelBuilder.Entity<BasketItem>()
             .HasKey(bi => new { bi.BasketId, bi.ProductId });
+            modelBuilder.Entity<OrderItem>()
+            .HasKey(oi => new { oi.OrderId, oi.ProductId });
 
             modelBuilder.Entity<BasketItem>().HasOne(b_i => b_i.Basket).WithMany(b => b.BasketItems).HasForeignKey(b_i => b_i.BasketId);
             modelBuilder.Entity<BasketItem>().HasOne(b_i => b_i.Product).WithMany().HasForeignKey(b_i => b_i.ProductId);
-
-
 
             modelBuilder.Entity<User>().HasIndex(u => u.Name).IsUnique();
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();

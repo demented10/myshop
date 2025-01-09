@@ -58,10 +58,32 @@ namespace eshop.Client.Services
                         UserId = serverBasket.UserId,
                         BasketItems = basketItems
                     };
-                    return BasketServiceHelpers.MergeBaskets(basket, userBasket);
+                    return await MergeBaskets(basket, userBasket);
                 }
             }
             return basket;
+        }
+        public async Task<Basket> MergeBaskets(Basket serverBasket, Basket clientBasket)
+        {
+            var isAuth = await AuthHelper.IsAuth(_authStateProvider);
+
+            foreach (var item in serverBasket.BasketItems)
+            {
+                if (!clientBasket.BasketItems.Any(i => i.product.Id == item.product.Id))
+                {
+                    clientBasket.BasketItems.Add(item);
+                }
+                if (isAuth)
+                {
+                    await _httpClient.PostAsJsonAsync($"{_httpClient.BaseAddress}/BasketItem/addBasketItem", new
+                    {
+                        BasketId = serverBasket.BasketId,
+                        ProductId = item.product.Id,
+                        Quantity = item.Quantity
+                    });
+                }
+            }
+            return clientBasket;
         }
         public async Task AddBasketItemAsync(BasketItem basketItem)
         {
@@ -94,8 +116,12 @@ namespace eshop.Client.Services
         public async Task RemoveItemAsync(int productId)
         {
             var basket = await GetBasketAsync();
+            if(await AuthHelper.IsAuth(_authStateProvider))
+            {
+                await _httpClient.PostAsJsonAsync($"{_httpClient.BaseAddress}/BasketItem/removeItem", new { basketId = basket.BasketId, productId = productId });                 
+            }
             basket.BasketItems.RemoveAll(t=>t.product.Id == productId);
-
+            
             await SaveBasketAsync(basket);
         }
         public async Task ClearBasketAsync()
@@ -104,31 +130,34 @@ namespace eshop.Client.Services
             basket.BasketItems.Clear();
             await SaveBasketAsync(basket);
         }
-        public async Task ChangeItemCount(int count, int productId)
+        public async Task<int> ChangeItemCount(int count, int productId)
         {
             var basket = await GetBasketAsync();
             var item = basket.BasketItems.FirstOrDefault(bi => bi.product.Id == productId);
-            if (item is null) return;
+            if (item is null) return -1;
             if (await AuthHelper.IsAuth(_authStateProvider))
             {
                 var userId = _authStateProvider.CurrentUser.UserId;
-                if (count > 0)
+                if (count >= 0)
+                {
                     await _httpClient.PostAsJsonAsync($"{_httpClient.BaseAddress}/BasketItem/addCount",
                     new { basketId = basket.BasketId, productId, count });
+                }
                 else
                 {
-                    count = -count;
+                    var reverseCount = -count;
                     await _httpClient.PostAsJsonAsync($"{_httpClient.BaseAddress}/BasketItem/removeCount",
-                    new { basketId = basket.BasketId, productId, count });
-                    
+                    new { basketId = basket.BasketId, productId, count = reverseCount });
+
                 }
             }
-            else
-            {
-                item.Quantity = item.Quantity + count > 0 ? count + item.Quantity : 0;
-            }
-            if (item.Quantity <= 0) await RemoveItemAsync(productId);
+
+            item.Quantity += count;
+            if (item.Quantity <= 0)
+                basket.BasketItems.Remove(item);
             await SaveBasketAsync(basket);
+            return item.Quantity;
+
         }
 
     }

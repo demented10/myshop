@@ -1,6 +1,4 @@
 ﻿
-using eshop.Domain.Entities;
-
 namespace eshop.Domain.Repositories
 {
     public interface IBasketRepository<Basket> : IRepository<Basket>

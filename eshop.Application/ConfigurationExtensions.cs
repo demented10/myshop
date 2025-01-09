@@ -11,6 +11,8 @@ using eshop.Domain.Repositories;
 using eshop.Application.Users;
 using eshop.Application.Baskets;
 using eshop.Application.BasketItems;
+using eshop.Application.Orders;
+using eshop.Application.OrderItems;
 
 
 namespace eshop.Application
@@ -31,13 +33,16 @@ namespace eshop.Application
                 .AddScoped<IUserRepository<User>, UserRepository>()
                 .AddScoped<IBasketRepository<Basket>, BasketRepository>()
                 .AddScoped<IBasketItemRepository<BasketItem>, BasketItemRepository>();
-            //Services
-            services.AddScoped<GetProductService>().AddScoped<AddProductService>().
-                AddScoped<AddCategoryService>().AddScoped<GetCategoryService>()
-                .AddScoped<UserRegistrationService>().AddScoped<GetUsersService>()
-                .AddScoped<CreateBasketService>().AddScoped<GetBasketService>().AddScoped<DeleteBasketService>()
-                .AddScoped<CreateBasketItemService>().AddScoped<QuantityBasketItemService>()
-                .AddTransient<UserAuthenticationService>();
+            //Services (scoped)
+            services.AddScoped<GetProductService>().AddScoped<AddProductService>(). //Product
+                AddScoped<AddCategoryService>().AddScoped<GetCategoryService>() //Category
+                .AddScoped<UserRegistrationService>().AddScoped<GetUsersService>() //User
+                .AddScoped<CreateBasketService>().AddScoped<GetBasketService>().AddScoped<DeleteBasketService>() //Basket
+                .AddScoped<CreateBasketItemService>().AddScoped<QuantityBasketItemService>().AddScoped<RemoveBasketItemService>()//BasketItem
+                .AddScoped<CreateOrderService>() //Order
+                .AddScoped<CreateOrderItemService>(); //OrderItem
+            //Services (transient)
+            services.AddTransient<UserAuthenticationService>();
 
 
 

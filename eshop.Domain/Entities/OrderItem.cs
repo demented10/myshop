@@ -2,7 +2,6 @@
 {
     public class OrderItem
     {
-        public required int Id { get; set; }
         public required int OrderId { get; set; }
         public virtual Order? Order { get; set; }
         public required int ProductId { get; set; }
