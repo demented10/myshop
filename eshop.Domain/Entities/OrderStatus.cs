@@ -1,9 +1,11 @@
 ﻿namespace eshop.Domain.Entities
 {
-    public class OrderStatus
+    public enum OrderStatus
     {
-        public required int Id { get; set; }
-        public required string Name { get; set; }
-        public virtual ICollection<Order>? Orders { get; set; }
+        Pending = 1,
+        Processing = 2,
+        Completed = 3,
+        Cancelled = 4
     }
+
 }

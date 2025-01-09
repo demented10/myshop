@@ -15,7 +15,6 @@ namespace eshop.Infrastructure
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Order> Orders { get; set; } = null!;
         public DbSet<OrderItem> OrderItems { get; set; } = null!;
-        public DbSet<OrderStatus> OrderStatuses { get; set; } = null!;
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         
@@ -32,6 +31,10 @@ namespace eshop.Infrastructure
             .HasKey(bi => new { bi.BasketId, bi.ProductId });
             modelBuilder.Entity<OrderItem>()
             .HasKey(oi => new { oi.OrderId, oi.ProductId });
+
+            modelBuilder.Entity<Order>()
+            .Property(o => o.Status)
+            .HasConversion<int>();
 
             modelBuilder.Entity<BasketItem>().HasOne(b_i => b_i.Basket).WithMany(b => b.BasketItems).HasForeignKey(b_i => b_i.BasketId);
             modelBuilder.Entity<BasketItem>().HasOne(b_i => b_i.Product).WithMany().HasForeignKey(b_i => b_i.ProductId);

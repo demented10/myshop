@@ -1,8 +1,8 @@
 ﻿using Castle.Core.Logging;
 using eshop.Application.OrderItems;
-using eshop.Domain;
 using eshop.Domain.Entities;
 using eshop.Domain.Repositories;
+using eshop.Domain.Utilites;
 using eshop.Infrastructure;
 using FluentResults;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 namespace eshop.Application.Orders
 {
     public class CreateOrderService(IOrderRepository<Order> orderRepository, 
-        IOrderStatusRepository<OrderStatus> orderStatusRepository,
         IBasketRepository<Basket> basketRepository,
         ILogger<CreateOrderService> logger,
         AppDbContext context, CreateOrderItemService createOrderItemService)
@@ -25,10 +24,9 @@ namespace eshop.Application.Orders
         private readonly ILogger<CreateOrderService> _logger = logger;
         private readonly AppDbContext _context = context;
         private readonly IBasketRepository<Basket> _basketRepository = basketRepository;
-        private readonly IOrderStatusRepository<OrderStatus> _orderStatusRepository = orderStatusRepository;
         private readonly CreateOrderItemService _createOrderItemService = createOrderItemService;
 
-        public async Task<Result> CreateOrderAsync(int userId, CancellationToken cancellationToken)
+        public async Task<Result<OrderDto>> CreateOrderAsync(int userId, CancellationToken cancellationToken)
         {
             using (IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync(cancellationToken))
             {
@@ -43,11 +41,11 @@ namespace eshop.Application.Orders
 
                     var currentBasket = userBaskets.OrderByDescending(item => item.Id).FirstOrDefault();
                     //Формируем заказ
-                    if (currentBasket is null)
+                    if (currentBasket is null || currentBasket.BasketItems is null)
                         throw new ArgumentNullException("Current basket not found!");
 
                     var newOrder = CreateOrderFromBasket(currentBasket, 
-                        (await _orderStatusRepository.GetNotPayedStatusAsync()).Id);
+                        OrderStatus.Pending);
                     await _orderRepository.CreateAsync(newOrder);
                     //Заполняем заказ товарами из корзины
 
@@ -59,7 +57,12 @@ namespace eshop.Application.Orders
 
                     transaction.Commit();
 
-                    return Result.Ok();
+                    return Result.Ok(new OrderDto(
+                        newOrder.Id,
+                        newOrder.UserId,
+                        newOrder.OrderDate, 
+                        newOrder.Status.ToString(),
+                        newOrder.TotalAmount));
 
                 }
                 catch (Exception ex)
@@ -71,7 +74,7 @@ namespace eshop.Application.Orders
             }
         }
 
-        private static Order CreateOrderFromBasket(Basket basket, int statusId)
+        private static Order CreateOrderFromBasket(Basket basket, OrderStatus status)
         {
             if (basket.BasketItems is null)
                 throw new ArgumentNullException("BasketItems is null");
@@ -80,7 +83,7 @@ namespace eshop.Application.Orders
                 OrderDate = DateTime.UtcNow,
                 TotalAmount = OrderCalculator.CalculateTotalCost(basket.BasketItems),
                 UserId = basket.UserId,
-                StatusId = statusId             
+                Status = status             
             };
             return order;
         }

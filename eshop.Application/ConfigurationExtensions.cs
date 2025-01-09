@@ -32,7 +32,9 @@ namespace eshop.Application
                 .AddScoped<ICategoryRepository<Category>, CategoryRepository>()
                 .AddScoped<IUserRepository<User>, UserRepository>()
                 .AddScoped<IBasketRepository<Basket>, BasketRepository>()
-                .AddScoped<IBasketItemRepository<BasketItem>, BasketItemRepository>();
+                .AddScoped<IBasketItemRepository<BasketItem>, BasketItemRepository>()
+                .AddScoped<IOrderRepository<Order>, OrderRepository>()
+                .AddScoped<IOrderItemRepository<OrderItem>, OrderItemRepository>();
             //Services (scoped)
             services.AddScoped<GetProductService>().AddScoped<AddProductService>(). //Product
                 AddScoped<AddCategoryService>().AddScoped<GetCategoryService>() //Category
