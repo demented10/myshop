@@ -41,7 +41,7 @@ namespace eshop.Application
                 .AddScoped<UserRegistrationService>().AddScoped<GetUsersService>() //User
                 .AddScoped<CreateBasketService>().AddScoped<GetBasketService>().AddScoped<DeleteBasketService>() //Basket
                 .AddScoped<CreateBasketItemService>().AddScoped<QuantityBasketItemService>().AddScoped<RemoveBasketItemService>()//BasketItem
-                .AddScoped<CreateOrderService>() //Order
+                .AddScoped<CreateOrderService>().AddScoped<GetOrderService>() //Order
                 .AddScoped<CreateOrderItemService>(); //OrderItem
             //Services (transient)
             services.AddTransient<UserAuthenticationService>();

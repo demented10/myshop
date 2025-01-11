@@ -91,6 +91,8 @@ namespace eshop.Application.Baskets
             try
             {
                 var basket = await _basketRepository.GetBasketItemsAsync(basketId);
+                if (basket.BasketItems is null)
+                    throw new ArgumentNullException($"In basket with Id {basketId} basket items is null");
                 return Result.Ok(basket.BasketItems.Select(bi => new BasketItemDto(bi.BasketId, bi.ProductId, bi.Quantity)));
             }
             catch(Exception ex)

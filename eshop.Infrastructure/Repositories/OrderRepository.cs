@@ -1,5 +1,6 @@
 ﻿using eshop.Domain.Entities;
 using eshop.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,14 +29,33 @@ namespace eshop.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyCollection<Order>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyCollection<Order>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _context.Orders.ToListAsync();
         }
 
-        public Task<Order> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Order> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var order = await _context.Orders.FirstOrDefaultAsync(t => t.Id == id);
+            return order is null ? throw new ArgumentException($"Order with id {id} not found.") : order;
+        }
+
+        public async Task<Order> GetOrderItemsAsync(int orderId)
+        {
+            var orders = await _context.Orders
+                .Include(oi => oi.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+              
+            if (orders is null)
+                throw new Exception("Order doesnt exists");
+
+            return orders;
+        }
+
+        public async Task<IEnumerable<Order>> GetUserOrdersAsync(int userId)
+        {
+            var order = await _context.Orders.Where(t => t.UserId == userId).ToListAsync();
+            return order;
         }
 
         public Task UpdateAsync(Order entity)

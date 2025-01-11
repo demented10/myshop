@@ -1,11 +1,12 @@
 
 @using Microsoft.AspNetCore.Components.Authorization
+@using eshop.Client.Pages.Modals
 @attribute [Authorize]
 @inject CustomAuthenticationStateProvider authStateProvider
 @inject HttpClient httpClient
 @inject BasketService basketService
-
 @page "/basket"
+<CascadingBlazoredModal />
 <table class="table">
     <thead>
         <tr>
@@ -32,13 +33,17 @@
                     <td><button class="btn btn-danger" @onclick="@(() => RemoveFromBasket(basketItem.product.Id))">Убрать</button></td>
                 </tr>
             }
+            @if(basket.BasketItems is not null){
+                <button class="btn btn-outline-info" @onclick="ShowOrderConfirmation">Оформить заказ</button>
+            }
         }
     </tbody>
 </table>
-<button class="btn btn-outline-info">Оформить заказ</button>
+
 @code {
     private bool isAuth = false;
     private Models.Basket.Basket basket = new();
+    [CascadingParameter] public IModalService Modal { get; set; } = default!;
     protected override async Task OnInitializedAsync()
     {
         basket = await basketService.GetBasketAsync();
@@ -55,6 +60,15 @@
             basket = await basketService.GetBasketAsync();
         else
             basket.BasketItems.First(bi => bi.product.Id == productId).Quantity = currentCount;
+    }
+    private void ShowOrderConfirmation()
+    {
+        var parameters = new ModalParameters
+        {
+            { nameof(OrderConfirmation.Message), "test" }
+        };
+        var confirmationModal = Modal.Show<OrderConfirmation>("Подтверждение заказа", parameters);
+        //var result = await confirmationModal.Result;
     }
 }
     

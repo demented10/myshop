@@ -54,7 +54,7 @@ namespace eshop.Infrastructure.Repositories
         {
             var baskets = await _context.Baskets
                 .Include(bi => bi.BasketItems)
-                .FirstOrDefaultAsync(b => b.Id == basketId); ;
+                .FirstOrDefaultAsync(b => b.Id == basketId);
             if (baskets is null)
                 throw new Exception("Basket doesnt exists");
 
