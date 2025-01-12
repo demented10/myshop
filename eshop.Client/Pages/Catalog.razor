@@ -1,0 +1,97 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
+@page "/catalog"
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@inject HttpClient Http
+@inject BasketService basketService
+
+
+    <PageTitle>Каталог</PageTitle>
+    <h1>Каталог товаров</h1>
+    @if (_products == null)
+        {
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Идентификатор</th>
+                        <th>Наименования</th>
+                        <th>Описание</th>
+                        <th>Цена</th>
+                        <th>Категория</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in _products)
+                    {
+                        <tr>
+                            <td>@product.Id</td>
+                            <td>@product.Name</td>
+                            <td>@product.Description</td>
+                            <td>@product.Price</td>
+                            <td>@GetCategory(product).Name</td>
+                            <td><button class="btn btn-outline-dark" @onclick="@(() => AddToBasket(product))">В корзину</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+
+@code {
+    private List<ProductViewModel>? _products;
+    private List<CategoryViewModel>? _categories;
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            _products = await Http.GetFromJsonAsync<List<ProductViewModel>>(Http.BaseAddress + "/Product/all");
+            _categories = await Http.GetFromJsonAsync<List<CategoryViewModel>>(Http.BaseAddress + "/Category/all");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка: {ex.Message}");
+        }
+        
+    }
+    private async Task AddToBasket(ProductViewModel product)
+    {
+        await basketService.AddBasketItemAsync(new Models.Basket.BasketItem
+            {
+                product = new Models.Product
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price
+                },
+                Quantity = 1
+            });
+        Console.WriteLine($"{product.Name} добавлен в корзину.");
+    }
+    private CategoryViewModel GetCategory(ProductViewModel product)
+    {
+        var category = _categories.First(c => c.Id == product.CategoryId);
+        return category;
+    }
+    // Models/Product.cs
+    public class ProductViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description{ get; set; }
+        public decimal Price { get; set; }
+        public int CategoryId { get; set; }
+
+    }
+    public class CategoryViewModel
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
+}

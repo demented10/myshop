@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@inject CustomAuthenticationStateProvider CustomAuthenticationStateProvider
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <nav class="flex-row">
+            <div class="top-row px-4">
+                  <AuthorizeView>
+                   <NotAuthorized>
+                    <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="login">
+                                <button class="btn btn-outline-primary">Вход</button>
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="registration">
+                                <button class="btn btn-primary">Регистрация</button>
+                            </NavLink>
+                        </div>
+                    </NotAuthorized>
+                    <Authorized>
+                        <NavLink class="nav-link" href="/">
+                            <button class="btn btn-primary" @onclick="CustomAuthenticationStateProvider.Logout">Выход</button>
+                        </NavLink>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+         </nav>
+        
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+

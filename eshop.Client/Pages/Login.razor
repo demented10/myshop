@@ -1,0 +1,48 @@
+﻿@page "/login"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject CustomAuthenticationStateProvider CustomAuthStateProvider
+@inject UserService UserService
+@using Microsoft.AspNetCore.Authorization;
+@using eshop.Client.Services
+
+
+<h3>Вход</h3>
+
+<EditForm Model="@model" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="username" @bind-Value="model.Username" placeholder="Имя пользователя" />
+    <br />
+    <InputText type="password" id="password" @bind-Value="model.Password" placeholder="Пароль" />
+    <br />
+    <button type="submit" class="btn btn-primary">Войти</button>
+</EditForm>
+
+@code {
+    private LoginModel model = new LoginModel();
+    private async Task HandleLogin()
+    {
+        try
+        {
+            await CustomAuthStateProvider.LoginAsync(model.Username, model.Password);
+            NavManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    public class LoginModel
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class AuthResponse
+    {
+        public string Token { get; set; }
+    }
+}

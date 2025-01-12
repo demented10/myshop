@@ -6,6 +6,13 @@ using eshop.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore.Proxies;
+using eshop.Domain.Repositories;
+using eshop.Application.Users;
+using eshop.Application.Baskets;
+using eshop.Application.BasketItems;
+using eshop.Application.Orders;
+using eshop.Application.OrderItems;
 
 
 namespace eshop.Application
@@ -16,14 +23,31 @@ namespace eshop.Application
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(connectionString)
+            .UseLazyLoadingProxies()
+            );
 
-            //services.AddScoped<RepositoryFactory, DatabaseRepositoryFactory>();
-            services.AddScoped<IRepository<Product>, ProductRepository>()
-                .AddScoped<IRepository<Category>, CategoryRepository>();
-            services.AddScoped<GetProductService>().AddScoped<AddProductService>().
-                AddScoped<AddCategoryService>();
-                     
+            //Repositories
+            services.AddScoped<IProductRepository<Product>, ProductRepository>()
+                .AddScoped<ICategoryRepository<Category>, CategoryRepository>()
+                .AddScoped<IUserRepository<User>, UserRepository>()
+                .AddScoped<IBasketRepository<Basket>, BasketRepository>()
+                .AddScoped<IBasketItemRepository<BasketItem>, BasketItemRepository>()
+                .AddScoped<IOrderRepository<Order>, OrderRepository>()
+                .AddScoped<IOrderItemRepository<OrderItem>, OrderItemRepository>();
+            //Services (scoped)
+            services.AddScoped<GetProductService>().AddScoped<AddProductService>(). //Product
+                AddScoped<AddCategoryService>().AddScoped<GetCategoryService>() //Category
+                .AddScoped<UserRegistrationService>().AddScoped<GetUsersService>() //User
+                .AddScoped<CreateBasketService>().AddScoped<GetBasketService>().AddScoped<DeleteBasketService>() //Basket
+                .AddScoped<CreateBasketItemService>().AddScoped<QuantityBasketItemService>().AddScoped<RemoveBasketItemService>()//BasketItem
+                .AddScoped<CreateOrderService>().AddScoped<GetOrderService>() //Order
+                .AddScoped<CreateOrderItemService>(); //OrderItem
+            //Services (transient)
+            services.AddTransient<UserAuthenticationService>();
+
+
+
             return services;
         }
     }

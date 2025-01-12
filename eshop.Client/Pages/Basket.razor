@@ -1,0 +1,74 @@
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using eshop.Client.Pages.Modals
+@attribute [Authorize]
+@inject CustomAuthenticationStateProvider authStateProvider
+@inject HttpClient httpClient
+@inject BasketService basketService
+@inject IModalService Modal
+@page "/basket"
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Наименование</th>
+            <th>Описание</th>
+            <th>Цена</th>
+            <th>Количество</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if(basket is not null)
+        {
+            @foreach (var basketItem in basket.BasketItems)
+            {
+                <tr>
+                    <td>@basketItem.product.Name</td>
+                    <td>@basketItem.product.Description</td>
+                    <td>@basketItem.product.Price</td>
+                    <td>
+                        <button class="btn btn-outline-danger" @onclick="@(() => ChangeItemCount(-1, basketItem.product.Id))">-</button>
+                        @basketItem.Quantity
+                        <button class="btn btn-outline-success" @onclick="@(() => ChangeItemCount(1, basketItem.product.Id))">+</button></td>
+                    <td><button class="btn btn-danger" @onclick="@(() => RemoveFromBasket(basketItem.product.Id))">Убрать</button></td>
+                </tr>
+            }
+            @if(basket.BasketItems is not null){
+                <button class="btn btn-outline-info" @onclick="ShowOrderConfirmation">Оформить заказ</button>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private bool isAuth = false;
+    private Models.Basket.Basket basket = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        basket = await basketService.GetBasketAsync();
+    }
+    private async Task RemoveFromBasket(int productId)
+    {
+        await basketService.RemoveItemAsync(productId);
+        basket = await basketService.GetBasketAsync();
+    }
+    private async Task ChangeItemCount(int count, int productId)
+    {
+        var currentCount = await basketService.ChangeItemCount(count, productId);
+        if (currentCount <= 0)
+            basket = await basketService.GetBasketAsync();
+        else
+            basket.BasketItems.First(bi => bi.product.Id == productId).Quantity = currentCount;
+    }
+    private void ShowOrderConfirmation()
+    {
+
+        ModalParameters parameters = new ModalParameters().Add("Basket", basket);
+        var confirmationModal = Modal.Show<OrderConfirmation>("Подтверждение заказа", parameters);
+        //var result = await confirmationModal.Result;
+    }
+}
+    

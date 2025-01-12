@@ -1,4 +1,5 @@
 ﻿using eshop.Domain.Entities;
+using eshop.Domain.Repositories;
 using eshop.Infrastructure;
 using eshop.Infrastructure.Repositories;
 using FluentResults;
@@ -11,22 +12,22 @@ namespace eshop.Application
     {
         public class AddProductService
         {
-            private readonly IRepository<Product> _productRepository;
+            private readonly IProductRepository<Product> _productRepository;
 
-            public AddProductService(IRepository<Product> productRepository)
+            public AddProductService(IProductRepository<Product> productRepository)
             {
                _productRepository = productRepository;
             }
 
-            public async Task<Result<ProductDto>> AddItemAsync(ProductDto productDto, CancellationToken cancellationToken)
+            public async Task<Result<ProductDto>> AddItemAsync(ProductDto productDto)
             {
                 try
                 {
                     var product = new Product{
-                        Name = productDto.name,
-                        Price = productDto.price,
-                        Description = productDto.description,
-                        CategoryId = productDto.categoryId
+                        Name = productDto.Name,
+                        Price = productDto.Price,
+                        Description = productDto.Description,
+                        CategoryId = productDto.CategoryId
                     };
                     await _productRepository.CreateAsync(product);
                     return Result.Ok(new ProductDto(product.Id, product.Name, product.Description, product.Price, product.CategoryId));

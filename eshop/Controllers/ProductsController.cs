@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using eshop.Domain.Entities;
 using eshop.Infrastructure;
 using eshop.Application.eshop.Application.Products;
+using eshop.Application.Categories;
 
 namespace eshop.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ProductController : Controller
     {
         private readonly AddProductService _addService;
@@ -25,11 +26,11 @@ namespace eshop.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductDto>> Create([FromBody] ProductDto productDto)
         {
-            var result = await _addService.AddItemAsync(productDto, CancellationToken.None);
+            var result = await _addService.AddItemAsync(productDto);
 
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(Create), new { result.Value.id }, result.Value);
+                return CreatedAtAction(nameof(Create), new { result.Value.Id }, result.Value);
             }
 
             return BadRequest(result.Errors);
@@ -40,7 +41,7 @@ namespace eshop.Controllers
             var result = await _getProductService.GetItemsAsync(CancellationToken.None);
             if (result.IsSuccess)
             {
-                return Ok(result.Value);
+                return Json(result.Value);
             }
             return BadRequest(result.Errors);
         }
@@ -55,6 +56,15 @@ namespace eshop.Controllers
             return BadRequest(result.Errors);
         }
 
-        // Другие методы...
+        [HttpGet("{productId:int}/category")]
+        public async Task<ActionResult<CategoryDto>> GetProductCategoryAsync(int productId)
+        {
+            var result = await _getProductService.GetProductCategoryAsync(productId, CancellationToken.None);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Errors);
+        }
     }
 }

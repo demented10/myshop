@@ -1,6 +1,6 @@
 ﻿using eshop.Application.eshop.Application.Products;
 using eshop.Domain.Entities;
-using eshop.Infrastructure.Repositories;
+using eshop.Domain.Repositories;
 using FluentResults;
 using System;
 using System.Collections.Generic;
@@ -12,20 +12,20 @@ namespace eshop.Application.Categories
 {
     public class AddCategoryService
     {
-        private readonly IRepository<Category> _categoryRepository;
+        private readonly ICategoryRepository<Category> _categoryRepository;
 
-        public AddCategoryService(IRepository<Category> categoryRepository)
+        public AddCategoryService(ICategoryRepository<Category> categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<Result<CategoryDto>> AddCategoryAsync(CategoryDto categoryDto, CancellationToken cancellationToken)
+        public async Task<Result<CategoryDto>> AddCategoryAsync(CategoryDto categoryDto)
         {
             try
             {
                 var category = new Category
                 {
-                    Name = categoryDto.name
+                    Name = categoryDto.Name
                 };
 
                 await _categoryRepository.CreateAsync(category);

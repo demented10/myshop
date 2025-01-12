@@ -1,11 +1,10 @@
 ﻿using eshop.Domain.Entities;
+using eshop.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Immutable;
-using System.Reflection.Metadata.Ecma335;
 
 namespace eshop.Infrastructure.Repositories
 {
-    public class ProductRepository : IRepository<Product>
+    public class ProductRepository : IProductRepository<Product>
     {
 
         private readonly AppDbContext _context;
@@ -47,6 +46,14 @@ namespace eshop.Infrastructure.Repositories
 
             _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Product> GetProductCategoryAsync(int productId, CancellationToken cancellationToken)
+        {
+            var product = await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == productId);
+            if (product is null)
+                throw new Exception("Не удалось получить продукт с категорией");
+            return product;
         }
     }
 }
