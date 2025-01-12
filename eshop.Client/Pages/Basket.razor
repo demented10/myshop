@@ -5,8 +5,10 @@
 @inject CustomAuthenticationStateProvider authStateProvider
 @inject HttpClient httpClient
 @inject BasketService basketService
+@inject IModalService Modal
 @page "/basket"
-<CascadingBlazoredModal />
+
+
 <table class="table">
     <thead>
         <tr>
@@ -43,7 +45,7 @@
 @code {
     private bool isAuth = false;
     private Models.Basket.Basket basket = new();
-    [CascadingParameter] public IModalService Modal { get; set; } = default!;
+
     protected override async Task OnInitializedAsync()
     {
         basket = await basketService.GetBasketAsync();
@@ -63,13 +65,10 @@
     }
     private void ShowOrderConfirmation()
     {
-        var parameters = new ModalParameters
-        {
-            { nameof(OrderConfirmation.Message), "test" }
-        };
+
+        ModalParameters parameters = new ModalParameters().Add("Basket", basket);
         var confirmationModal = Modal.Show<OrderConfirmation>("Подтверждение заказа", parameters);
         //var result = await confirmationModal.Result;
     }
 }
-    
     

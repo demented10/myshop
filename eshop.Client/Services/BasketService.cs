@@ -1,6 +1,5 @@
 using Blazored.LocalStorage;
 using Blazored.LocalStorage.StorageOptions;
-using Blazorise;
 using eshop.Client.Models;
 using eshop.Client.Models.Basket;
 using Microsoft.AspNetCore.Components.Authorization;

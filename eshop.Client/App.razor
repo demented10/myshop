@@ -1,16 +1,15 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-<CascadingAuthenticationState>
-    ﻿<CascadingBlazoredModal>
-        <Router AppAssembly="@typeof(App).Assembly">
-            <Found Context="routeData">
-                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-                </RouteView>
-                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-            </Found>
-            <NotFound>
-                ...
-            </NotFound>
-        </Router>
-    </CascadingBlazoredModal>
-</CascadingAuthenticationState>
+﻿<CascadingBlazoredModal>
+    <CascadingAuthenticationState>
 
+            <Router AppAssembly="@typeof(App).Assembly">
+                <Found Context="routeData">
+                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                    </RouteView>
+                    <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+                </Found>
+                
+            </Router>
+   
+    </CascadingAuthenticationState>
+</CascadingBlazoredModal>
