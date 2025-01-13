@@ -1,7 +1,7 @@
 using Blazored.LocalStorage;
 using Blazored.LocalStorage.StorageOptions;
-using eshop.Client.Models;
-using eshop.Client.Models.Basket;
+using eshop.Client.Models.Baskets;
+using eshop.Client.Models.Products;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -42,6 +42,7 @@ namespace eshop.Client.Services
 
                     foreach(var item in serverBasketItems)
                     {
+                        #region Вынести в сервис товаров
                         var productReponse = await _httpClient.GetFromJsonAsync<ProductResponse>($"{_httpClient.BaseAddress}/Product/{item.ProductId}");
                         var basketItem = new BasketItem
                         {
@@ -49,6 +50,7 @@ namespace eshop.Client.Services
                             Quantity = item.Quantity
                         };
                         basketItems.Add(basketItem);
+                        #endregion
                     }
 
                     var userBasket = new Basket

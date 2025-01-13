@@ -61,9 +61,9 @@
     }
     private async Task AddToBasket(ProductViewModel product)
     {
-        await basketService.AddBasketItemAsync(new Models.Basket.BasketItem
+        await basketService.AddBasketItemAsync(new Models.Baskets.BasketItem
             {
-                product = new Models.Product
+                product = new Models.Products.Product
                 {
                     Id = product.Id,
                     Name = product.Name,

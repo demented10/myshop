@@ -19,8 +19,8 @@ namespace eshop.Controllers
             _createOrderService = createOrderService;
             _getOrderService = getOrderService;
         }
-        [HttpPost]
-        public async Task<ActionResult<OrderDto>> Create([FromBody] int userId)
+        [HttpPost("createUserOrder/{userId:int}")]
+        public async Task<ActionResult<OrderDto>> Create(int userId)
         {
             var result = await _createOrderService.CreateOrderAsync(userId, CancellationToken.None);
 

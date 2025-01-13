@@ -16,11 +16,10 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredModal();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5270/api") });
-builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
 sp.GetRequiredService<CustomAuthenticationStateProvider>());
-builder.Services.AddScoped<BasketService>();
+builder.Services.AddScoped<BasketService>().AddScoped<UserService>().AddScoped<OrderService>();
 builder.Services.AddAuthorizationCore();
 
 await builder.Build().RunAsync();

@@ -1,5 +1,4 @@
 ﻿using Blazored.LocalStorage;
-using eshop.Client.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
@@ -7,6 +6,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Net.Http.Headers;
 using System.Net;
+using eshop.Client.Models.Users;
 
 namespace eshop.Client.Services
 {

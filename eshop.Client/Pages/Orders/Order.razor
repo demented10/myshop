@@ -1,0 +1,10 @@
+﻿@page "/order"
+@inject NavigationManager NavigationManager
+<h3>Заказ</h3>
+
+
+<button class="btn btn-outline-success" @onclick="@(() => NavigationManager.NavigateTo("order/pay"))">Оплатить</button>
+
+@code {
+
+}

@@ -1,0 +1,26 @@
+﻿@page "/order/pay"
+
+<h3>Подтверждение заказа</h3>
+
+@inject NavigationManager NavigationManager
+@code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        string currentUrl = Uri.UnescapeDataString(NavigationManager.Uri).Split('?')[0];
+        string sourcePage = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+
+        if (!IsAllowedSource(sourcePage))
+        {
+            NavigationManager.NavigateTo(currentUrl);
+            StateHasChanged();
+        }
+    }
+
+    private bool IsAllowedSource(string source)
+    {
+        List<string> allowedSources = new List<string> { "/order", "/basket" };
+        return allowedSources.Contains(source);
+    }
+}

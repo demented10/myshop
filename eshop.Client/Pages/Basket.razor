@@ -1,6 +1,6 @@
 
 @using Microsoft.AspNetCore.Components.Authorization
-@using eshop.Client.Pages.Modals
+@using eshop.Client.Pages.Orders.Modals
 @attribute [Authorize]
 @inject CustomAuthenticationStateProvider authStateProvider
 @inject HttpClient httpClient
@@ -44,7 +44,7 @@
 
 @code {
     private bool isAuth = false;
-    private Models.Basket.Basket basket = new();
+    private Models.Baskets.Basket basket = new();
 
     protected override async Task OnInitializedAsync()
     {

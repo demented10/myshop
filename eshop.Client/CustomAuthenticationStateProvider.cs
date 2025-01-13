@@ -1,4 +1,4 @@
-﻿using eshop.Client.Models;
+﻿using eshop.Client.Models.Users;
 using eshop.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;

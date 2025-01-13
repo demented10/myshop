@@ -1,0 +1,72 @@
+﻿﻿<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Количество</th>
+                <th>Итоговая цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Basket is not null)
+            {
+                @foreach (var basketItem in Basket.BasketItems)
+                {
+                    <tr>
+                        <td>@basketItem.product.Name</td>
+                        <td>@basketItem.Quantity</td> 
+                        <td>@CalculateSum(basketItem.Quantity,basketItem.product.Price)</td>
+                    </tr>
+                }
+            }           
+        </tbody>
+    </table>
+    <button @onclick="SubmitForm" class="btn btn-primary">К оплате</button>
+    <button @onclick="Cancel" class="btn btn-secondary">Отмена</button>
+</div>
+
+@inject OrderService OrderService
+@inject NavigationManager NavigationManager
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@code {
+    [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; } = default!;
+    [Parameter] public Models.Baskets.Basket? Basket { get; set; }
+
+    async Task SubmitForm()
+    {
+        if (Basket is null)
+        {
+            Console.WriteLine("Корзина отсутствует(null)");
+            return;
+        }
+        var result = await CreateOrder();
+
+        if(result)
+        {
+            NavigationManager.NavigateTo("order");
+        }
+        else
+        {
+            Console.WriteLine("Ошибка создания заказа.");
+        }
+
+
+        await ModalInstance.CloseAsync();
+    }
+    async Task Cancel() => await ModalInstance.CancelAsync();
+
+    private async Task<bool> CreateOrder()
+    {
+        if(await AuthHelper.IsAuth(AuthStateProvider))
+        {
+            return await OrderService.CreateOrderAsync(AuthStateProvider.CurrentUser.UserId);
+        }
+        return false;
+    }
+
+    private decimal CalculateSum(int count, decimal price)
+    {
+        return count * price;
+    }
+
+}

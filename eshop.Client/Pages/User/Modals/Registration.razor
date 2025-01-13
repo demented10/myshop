@@ -1,0 +1,87 @@
+﻿
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Authorization
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <strong>Вы уже зарегестрированны!</strong> 
+    </Authorized>
+    <NotAuthorized>
+        <EditForm Model="@User" OnValidSubmit="Register">
+            <ChildContent Context="regFormdd">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="username">Имя пользователя:</label>
+                <InputText id="username" class="form-control" @bind-Value="User.Name" />
+                <ValidationMessage For="@(() => User.Name)" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Электронная почта:</label>
+                <InputText id="email" class="form-control" @bind-Value="User.Email" />
+                <ValidationMessage For="@(() => User.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="User.Password" />
+                <ValidationMessage For="@(() => User.Password)" />
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Подтвердите пароль:</label>
+                <InputText id="confirm-password" type="password" class="form-control" @bind-Value="User.ConfirmPassword" />
+                <ValidationMessage For="@(() => User.ConfirmPassword)" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            </ChildContent>
+        </EditForm>
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+    private UserRegistrationModel User { get; set; } = new UserRegistrationModel();
+    [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; } = default!;
+    private async Task Register()
+    {
+        var response = await Http.PostAsJsonAsync("http://localhost:5270/api/User/registration", new {
+            id = 0,
+            name = User.Name,
+            email = User.Email,
+            password = User.Password
+
+        });
+
+        if (response.IsSuccessStatusCode)
+        {
+            await AuthStateProvider.LoginAsync(User.Email, User.Password);
+            await ModalInstance.CloseAsync();
+        }
+        else
+        {
+            Console.WriteLine($"Ошибка регистрации: {(int)response.StatusCode}");
+        }
+    }
+    public class UserRegistrationModel
+    {
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+        [Required]
+        [MinLength(6)]
+        public string Password { get; set; }
+
+        [Compare(nameof(Password), ErrorMessage = "Пароли должны совпадать")]
+        public string ConfirmPassword { get; set; }
+
+        
+        // public record UserRegistrationDto(int Id, string Name, string Email, string Password);
+    }
+}
